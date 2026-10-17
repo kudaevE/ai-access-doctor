@@ -327,3 +327,35 @@ export interface FreeHubReport {
   doh_resolvers: PublicDohInfo[];
   timestamp: string;
 }
+
+export interface OneClickStatus {
+  adapter_name: string;
+  current_dns: string[];
+  is_cloudflare_dns: boolean;
+  is_google_dns: boolean;
+  current_openai_base_url?: string;
+  active_ai_preset?: string;
+  has_snapshot: boolean;
+  snapshot_timestamp?: string;
+}
+
+export interface TestedOption {
+  name: string;
+  endpoint: string;
+  is_working: boolean;
+  latency_ms: number;
+  note: string;
+}
+
+export interface AutoTroubleshootReport {
+  success: boolean;
+  title_ru: string;
+  explanation_ru: string;
+  selected_ai_name: string;
+  selected_ai_base_url: string;
+  selected_dns_name: string;
+  selected_dns_ip: string;
+  tested_ai: TestedOption[];
+  tested_dns: TestedOption[];
+  timestamp: string;
+}

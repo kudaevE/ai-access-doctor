@@ -310,6 +310,26 @@ pub mod commands {
     pub async fn get_free_hub() -> Result<diag::free_hub::FreeHubReport, String> {
         Ok(diag::free_hub::get_free_hub_data().await)
     }
+
+    #[tauri::command]
+    pub fn get_one_click_status() -> Result<diag::free_hub::OneClickStatus, String> {
+        Ok(diag::free_hub::get_one_click_status_internal())
+    }
+
+    #[tauri::command]
+    pub fn apply_one_click_preset(preset_id: String) -> Result<String, String> {
+        diag::free_hub::apply_one_click_preset_internal(&preset_id)
+    }
+
+    #[tauri::command]
+    pub fn rollback_all_settings() -> Result<String, String> {
+        diag::free_hub::rollback_all_settings_internal()
+    }
+
+    #[tauri::command]
+    pub async fn auto_troubleshoot_and_select() -> Result<diag::free_hub::AutoTroubleshootReport, String> {
+        diag::free_hub::auto_troubleshoot_and_select().await
+    }
 }
 
 use tauri::Manager;
@@ -361,6 +381,10 @@ pub fn run() {
             commands::get_safe_fixes,
             commands::apply_safe_fix,
             commands::get_free_hub,
+            commands::get_one_click_status,
+            commands::apply_one_click_preset,
+            commands::rollback_all_settings,
+            commands::auto_troubleshoot_and_select,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
