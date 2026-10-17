@@ -22,8 +22,13 @@ pub struct DiagnosticStorage {
 
 impl DiagnosticStorage {
     pub fn new() -> Self {
-        let mut db_path = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-        db_path.push("ai_access_doctor.db");
+        let appdata = std::env::var("APPDATA")
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+
+        let db_dir = appdata.join("AI Access Doctor");
+        let _ = std::fs::create_dir_all(&db_dir);
+        let db_path = db_dir.join("ai_access_doctor.db");
 
         let storage = Self { db_path };
         let _ = storage.init_db();

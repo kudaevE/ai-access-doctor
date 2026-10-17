@@ -307,10 +307,39 @@ pub mod commands {
     }
 }
 
+use tauri::Manager;
+
 pub fn run() {
-    tauri::Builder::default()
+    let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
+    let _ = std::fs::write(log_file, format!("Starting AI Access Doctor at {}\n", Utc::now()));
+
+    let app = tauri::Builder::default()
         .manage(AppState {
             storage: Mutex::new(DiagnosticStorage::new()),
+        })
+        .setup(|app| {
+            let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
+            if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(log_file) {
+                use std::io::Write;
+                let _ = writeln!(f, "In setup hook. Checking webview windows...");
+                for (label, win) in app.webview_windows() {
+                    let _ = writeln!(
+                        f,
+                        "Window '{}': is_visible={:?}, url={:?}",
+                        label,
+                        win.is_visible(),
+                        win.url()
+                    );
+                }
+            }
+            Ok(())
+        })
+        .on_window_event(|window, event| {
+            let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
+            if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(log_file) {
+                use std::io::Write;
+                let _ = writeln!(f, "Window '{}' event: {:?}", window.label(), event);
+            }
         })
         .invoke_handler(tauri::generate_handler![
             commands::run_full_diagnostics,
@@ -327,6 +356,14 @@ pub fn run() {
             commands::get_safe_fixes,
             commands::apply_safe_fix,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    app.run(|_app_handle, event| {
+        let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
+        if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(log_file) {
+            use std::io::Write;
+            let _ = writeln!(f, "RunEvent: {:?}", event);
+        }
+    });
 }

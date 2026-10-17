@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "AI Access Doctor",
   "version": "1.0.0",
-  "identifier": "com.aiaccessdoctor.app",
+  "identifier": "com.aiaccessdoctor.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,9 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "AI Access Doctor — Диагностика подключения к ИИ-сервисам",
+        "url": "index.html",
         "width": 1280,
         "height": 840,
         "minWidth": 1000,

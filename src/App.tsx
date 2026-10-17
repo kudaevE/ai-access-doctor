@@ -385,9 +385,13 @@ export const App: React.FC = () => {
     let unlisten: any;
     listen("diag-progress", (event: any) => {
       setProgress(event.payload as ProgressUpdate);
-    }).then((fn: any) => {
-      unlisten = fn;
-    });
+    })
+      .then((fn: any) => {
+        unlisten = fn;
+      })
+      .catch((e: any) => {
+        console.warn("Could not attach event listener:", e);
+      });
 
     return () => {
       if (unlisten) unlisten();
