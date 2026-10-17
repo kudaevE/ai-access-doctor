@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::process::Command;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FixPreview {
@@ -62,7 +61,7 @@ pub fn execute_safe_fix(fix_id: &str) -> Result<FixExecutionResult, String> {
 
     match fix_id {
         "flush_dns" => {
-            let output = Command::new("ipconfig")
+            let output = crate::diag::silent_command("ipconfig")
                 .arg("/flushdns")
                 .output()
                 .map_err(|e| format!("Не удалось выполнить ipconfig: {}", e))?;
@@ -80,7 +79,7 @@ pub fn execute_safe_fix(fix_id: &str) -> Result<FixExecutionResult, String> {
         }
         "clear_stale_proxy_env" => {
             let cmd = "[System.Environment]::SetEnvironmentVariable('HTTP_PROXY', $null, 'User'); [System.Environment]::SetEnvironmentVariable('HTTPS_PROXY', $null, 'User'); [System.Environment]::SetEnvironmentVariable('ALL_PROXY', $null, 'User')";
-            let output = Command::new("powershell")
+            let output = crate::diag::silent_command("powershell")
                 .args(["-NoProfile", "-NonInteractive", "-Command", cmd])
                 .output()
                 .map_err(|e| format!("Ошибка выполнения PowerShell: {}", e))?;
@@ -98,7 +97,7 @@ pub fn execute_safe_fix(fix_id: &str) -> Result<FixExecutionResult, String> {
         }
         "sync_env_to_active_proxy" => {
             let cmd = "[System.Environment]::SetEnvironmentVariable('HTTP_PROXY', 'http://127.0.0.1:10809', 'User'); [System.Environment]::SetEnvironmentVariable('HTTPS_PROXY', 'http://127.0.0.1:10809', 'User')";
-            let output = Command::new("powershell")
+            let output = crate::diag::silent_command("powershell")
                 .args(["-NoProfile", "-NonInteractive", "-Command", cmd])
                 .output()
                 .map_err(|e| format!("Ошибка выполнения PowerShell: {}", e))?;

@@ -14,11 +14,13 @@ import {
   Sparkles,
   Layers,
   Code2,
+  Globe,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
 
 export type TabType =
   | "dashboard"
+  | "free_hub"
   | "detective"
   | "services"
   | "comparison"
@@ -48,6 +50,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: "Дашборд",
       icon: LayoutDashboard,
       badge: isRunning ? "Тест..." : null,
+    },
+    {
+      id: "free_hub" as TabType,
+      label: "Свободный ИИ & DoH",
+      icon: Globe,
+      badge: "Free",
+      badgeColor: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
     },
     {
       id: "detective" as TabType,

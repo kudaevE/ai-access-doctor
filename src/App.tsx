@@ -3,6 +3,7 @@ import { Sidebar, TabType } from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { DashboardView } from "./components/DashboardView";
 import { ErrorDetectiveView } from "./components/ErrorDetectiveView";
+import { FreeHubView } from "./components/FreeHubView";
 import { ConnectionComparisonView } from "./components/ConnectionComparisonView";
 import { IdeDoctorView } from "./components/IdeDoctorView";
 import { SafeFixModal } from "./components/SafeFixModal";
@@ -498,6 +499,8 @@ export const App: React.FC = () => {
               onOpenFixModal={() => setIsFixModalOpen(true)}
             />
           )}
+
+          {activeTab === "free_hub" && <FreeHubView />}
 
           {activeTab === "detective" && <ErrorDetectiveView />}
 

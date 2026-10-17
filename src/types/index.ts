@@ -291,3 +291,39 @@ export interface FixExecutionResult {
   stdout: string;
   stderr: string;
 }
+
+export interface FreeProviderInfo {
+  id: string;
+  name: string;
+  category: string;
+  description_ru: string;
+  primary_endpoint: string;
+  base_url: string;
+  docs_url: string;
+  is_free_tier: boolean;
+  popular_models: string[];
+  recommended_for: string;
+  direct_rtt_ms?: number;
+  http_status?: number;
+  is_accessible: boolean;
+  status_text: string;
+  auth_note: string;
+}
+
+export interface PublicDohInfo {
+  name: string;
+  provider: string;
+  doh_url: string;
+  primary_ip: string;
+  secondary_ip: string;
+  description_ru: string;
+  features: string[];
+  is_tested_ok: boolean;
+  rtt_ms?: number;
+}
+
+export interface FreeHubReport {
+  providers: FreeProviderInfo[];
+  doh_resolvers: PublicDohInfo[];
+  timestamp: string;
+}

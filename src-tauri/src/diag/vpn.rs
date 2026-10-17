@@ -59,8 +59,8 @@ pub fn diagnose_vpn() -> VpnDiagnostics {
 
     #[cfg(windows)]
     {
-        // 1. Query network adapters
-        let adapter_output = std::process::Command::new("powershell")
+        // 1. Query network adapters (silently without console window)
+        let adapter_output = super::silent_command("powershell")
             .args([
                 "-NoProfile",
                 "-Command",
@@ -112,8 +112,8 @@ pub fn diagnose_vpn() -> VpnDiagnostics {
             }
         }
 
-        // 2. Query default IPv4 routing table via Get-NetRoute
-        let route_output = std::process::Command::new("powershell")
+        // 2. Query default IPv4 routing table via Get-NetRoute (silently without console window)
+        let route_output = super::silent_command("powershell")
             .args([
                 "-NoProfile",
                 "-Command",

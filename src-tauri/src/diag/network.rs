@@ -163,8 +163,8 @@ pub fn get_network_interfaces() -> Vec<InterfaceInfo> {
 
     #[cfg(windows)]
     {
-        // Use PowerShell Get-NetAdapter and Get-NetIPConfiguration for comprehensive Windows detail
-        let output = std::process::Command::new("powershell")
+        // Use PowerShell Get-NetAdapter and Get-NetIPConfiguration for comprehensive Windows detail (silently without console window)
+        let output = super::silent_command("powershell")
             .args([
                 "-NoProfile",
                 "-Command",

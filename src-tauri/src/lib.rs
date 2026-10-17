@@ -305,6 +305,11 @@ pub mod commands {
     pub async fn apply_safe_fix(fix_id: String) -> Result<FixExecutionResult, String> {
         execute_safe_fix(&fix_id)
     }
+
+    #[tauri::command]
+    pub async fn get_free_hub() -> Result<diag::free_hub::FreeHubReport, String> {
+        Ok(diag::free_hub::get_free_hub_data().await)
+    }
 }
 
 use tauri::Manager;
@@ -355,6 +360,7 @@ pub fn run() {
             commands::get_mcp_audits,
             commands::get_safe_fixes,
             commands::apply_safe_fix,
+            commands::get_free_hub,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

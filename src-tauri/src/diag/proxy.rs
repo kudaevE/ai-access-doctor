@@ -82,7 +82,7 @@ pub fn get_wininet_proxy() -> WinInetProxy {
 
 /// Query WinHTTP proxy via `netsh winhttp show proxy`
 pub fn get_winhttp_proxy() -> WinHttpProxy {
-    let output = std::process::Command::new("netsh")
+    let output = super::silent_command("netsh")
         .args(["winhttp", "show", "proxy"])
         .output();
 
