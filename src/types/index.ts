@@ -1,0 +1,206 @@
+export type VerdictState = "HEALTHY" | "WARNING" | "CRITICAL_ISSUE" | "UNKNOWN";
+
+export interface DiagnosticVerdict {
+  overall_state: VerdictState;
+  primary_issue_code: string;
+  confidence_percent: number;
+  title_ru: string;
+  explanation_ru: string;
+  technical_evidence: string[];
+  recommended_actions: string[];
+  passed_checks_count: number;
+  warning_checks_count: number;
+  failed_checks_count: number;
+}
+
+export interface InterfaceInfo {
+  name: string;
+  description: string;
+  status: string;
+  is_up: boolean;
+  mac?: string;
+  ipv4: string[];
+  ipv6: string[];
+  gateways: string[];
+  dns_servers: string[];
+  is_virtual: boolean;
+  adapter_type: string;
+}
+
+export interface DualStackStatus {
+  ipv4_working: boolean;
+  ipv4_rtt_ms?: number;
+  ipv6_working: boolean;
+  ipv6_rtt_ms?: number;
+  preferred_family: string;
+}
+
+export interface NetworkDiagnostics {
+  interfaces: InterfaceInfo[];
+  dual_stack: DualStackStatus;
+  primary_gateway?: string;
+  primary_interface?: string;
+  default_dns: string[];
+}
+
+export interface ResolverResult {
+  resolver_name: string;
+  resolver_ip: string;
+  success: boolean;
+  rtt_ms?: number;
+  resolved_ips: string[];
+  error?: string;
+}
+
+export interface DnsComparisonItem {
+  hostname: string;
+  system_result: ResolverResult;
+  cloudflare_result: ResolverResult;
+  google_result: ResolverResult;
+  quad9_result: ResolverResult;
+  is_tampered_or_blocked: boolean;
+  divergence_detected: boolean;
+  diagnosis_note: string;
+}
+
+export interface DnsDiagnostics {
+  system_dns_working: boolean;
+  average_dns_latency_ms: number;
+  items: DnsComparisonItem[];
+  any_tampering: boolean;
+}
+
+export interface WinInetProxy {
+  enabled: boolean;
+  server?: string;
+  pac_url?: string;
+  override_exceptions?: string;
+}
+
+export interface WinHttpProxy {
+  is_direct: boolean;
+  proxy_server?: string;
+  bypass_list?: string;
+  raw_output: string;
+}
+
+export interface ProxyEnvVars {
+  http_proxy?: string;
+  https_proxy?: string;
+  all_proxy?: string;
+  no_proxy?: string;
+  has_any: boolean;
+}
+
+export interface ProxyEndpointCheck {
+  endpoint: string;
+  is_listening: boolean;
+  tcp_rtt_ms?: number;
+  can_forward_https: boolean;
+  http_status?: number;
+  response_error?: string;
+}
+
+export interface ProxyDiagnostics {
+  wininet: WinInetProxy;
+  winhttp: WinHttpProxy;
+  env_vars: ProxyEnvVars;
+  active_proxies: ProxyEndpointCheck[];
+  has_conflict: boolean;
+  conflict_description?: string;
+  recommendation?: string;
+}
+
+export interface VirtualAdapter {
+  name: string;
+  description: string;
+  status: string;
+  is_active: boolean;
+  vpn_type: string;
+  ip_addresses: string[];
+}
+
+export interface RouteItem {
+  destination: string;
+  netmask: string;
+  gateway: string;
+  interface_name: string;
+  metric: number;
+  is_default_gateway: boolean;
+}
+
+export interface VpnDiagnostics {
+  active_virtual_adapters: VirtualAdapter[];
+  default_routes: RouteItem[];
+  vpn_tunnel_detected: boolean;
+  has_routing_collision: boolean;
+  analysis_summary: string;
+}
+
+export type ServiceStatusKind =
+  | "Pass"
+  | "AuthBoundary"
+  | "RateLimited"
+  | "DnsFailure"
+  | "TcpFailure"
+  | "TlsFailure"
+  | "ProxyFailure"
+  | "GeoBlocked"
+  | "ServerFailure"
+  | "Unknown";
+
+export interface EndpointCheck {
+  url: string;
+  host: string;
+  dns_ok: boolean;
+  tcp_ok: boolean;
+  tls_ok: boolean;
+  http_status?: number;
+  latency_ms: number;
+  server_header?: string;
+  status_kind: ServiceStatusKind;
+  details: string;
+}
+
+export interface ServiceProfileResult {
+  id: string;
+  name: string;
+  category: string;
+  overall_status: "pass" | "warning" | "fail" | "unknown";
+  status_kind: ServiceStatusKind;
+  primary_endpoint: string;
+  endpoints: EndpointCheck[];
+  latency_ms: number;
+  summary_ru: string;
+  summary_en: string;
+  recommendation_ru?: string;
+}
+
+export interface FullDiagnosticReport {
+  id: string;
+  timestamp: string;
+  verdict: DiagnosticVerdict;
+  network: NetworkDiagnostics;
+  dns: DnsDiagnostics;
+  proxy: ProxyDiagnostics;
+  vpn: VpnDiagnostics;
+  services: ServiceProfileResult[];
+}
+
+export interface HistoryRecordSummary {
+  id: string;
+  timestamp: string;
+  verdict_state: VerdictState;
+  primary_issue_code: string;
+  title_ru: string;
+  explanation_ru: string;
+  passed_count: number;
+  warning_count: number;
+  failed_count: number;
+}
+
+export interface ProgressUpdate {
+  stage: string;
+  percent: number;
+  message: string;
+}

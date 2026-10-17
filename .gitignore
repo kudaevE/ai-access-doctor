@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+dist/
+
+# Rust build artifacts
+src-tauri/target/
+
+# Local databases & logs
+*.db
+*.db-journal
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
