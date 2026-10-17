@@ -367,37 +367,60 @@ pub async fn diagnose_dns_targets(hostnames: &[&str]) -> DnsDiagnostics {
             latency_count += 1;
         }
 
-        // Check if System DNS resolved to a known ISP blocking stub or redirect
-        let is_known_isp_stub = sys.resolved_ips.iter().any(|ip| {
-            ip == "185.149.145.6" || ip == "127.0.0.1" || ip == "0.0.0.0"
-        });
+        // Check if System DNS resolved to a known Russian ISP blocking stub
+        let is_known_isp_stub = sys.resolved_ips.iter().any(|ip| ip == "185.149.145.6");
+
+        // Check if resolved to Antigravity local relay tunnel (ag_dns / 127.65.71.1)
+        let is_ag_relay = sys.resolved_ips.iter().any(|ip| ip == "127.65.71.1")
+            && (host.contains("googleapis.com") || host.contains("cloudcode"));
+
+        // Helper to check if an IP belongs to verified Google edge/Anycast ranges
+        let is_google_net = |ip: &str| {
+            ip.starts_with("142.250.")
+                || ip.starts_with("172.217.")
+                || ip.starts_with("209.85.")
+                || ip.starts_with("74.125.")
+                || ip.starts_with("108.177.")
+                || ip.starts_with("64.233.")
+                || ip.starts_with("216.58.")
+                || ip.starts_with("173.194.")
+                || ip.starts_with("216.239.")
+        };
 
         // Evaluate tampering/blocking:
-        // Case 1: System DNS fails, but Cloudflare or Google succeeds
+        // Case 1: System DNS completely fails, but Cloudflare or Google succeeds
         let is_blocked = (!sys.success) && (cf.success || google.success);
 
-        // Case 2: Divergence (System returns an IP that none of the public resolvers returned, like a captive portal or ISP landing page)
+        // Case 2: Divergence (System returns an IP that is an ISP stub or non-CDN mismatch)
         let mut divergence = is_known_isp_stub;
-        if sys.success && (cf.success || google.success) && !divergence {
+        if sys.success && (cf.success || google.success) && !divergence && !is_ag_relay {
             let sys_ip = &sys.resolved_ips;
             let public_ips: Vec<&String> = cf.resolved_ips.iter().chain(google.resolved_ips.iter()).collect();
-            let matches = sys_ip.iter().any(|ip| public_ips.contains(&ip));
-            if !matches && !public_ips.is_empty() {
+            let exact_match = sys_ip.iter().any(|ip| public_ips.contains(&ip));
+
+            // If it's a Google domain and both system and public returned genuine Google Anycast IPs, it's GeoDNS, not tampering
+            let is_google_geodns = host.contains("google")
+                && sys_ip.iter().all(|ip| is_google_net(ip))
+                && public_ips.iter().all(|ip| is_google_net(ip));
+
+            if !exact_match && !public_ips.is_empty() && !is_google_geodns {
                 divergence = true;
             }
         }
 
-        let is_tampered_or_blocked = is_blocked || divergence;
+        let is_tampered_or_blocked = (is_blocked || divergence) && !is_ag_relay;
         if is_tampered_or_blocked {
             any_tampering = true;
         }
 
-        let diagnosis_note = if is_known_isp_stub {
-            format!("Системный DNS подменяет домен {} на IP-заглушку провайдера ({:?}).", host, sys.resolved_ips)
+        let diagnosis_note = if is_ag_relay {
+            format!("Активен туннель Antigravity: домен перенаправлен на локальный шлюз ({:?}) через правило NRPT. Доступ к Google PA защищён.", sys.resolved_ips)
+        } else if is_known_isp_stub {
+            format!("БЛОКИРОВКА: Системный DNS подменяет домен {} на IP-заглушку провайдера (185.149.145.6). Включите DoH или обход Antigravity.", host)
         } else if is_blocked {
             format!("Системный DNS не может разрешить {}, но публичные DNS успешно возвращают IP. Вероятна блокировка провайдером.", host)
         } else if divergence {
-            format!("Обнаружено расхождение: Системный DNS возвращает IP {:?}, отличный от публичных серверов. Возможен DNS-спуфинг или редирект провайдера.", sys.resolved_ips)
+            format!("Обнаружено расхождение: Системный DNS возвращает IP {:?}, отличный от публичных серверов. Возможен DNS-спуфинг провайдера.", sys.resolved_ips)
         } else if sys.success {
             format!("DNS разрешается штатно ({:?}, RTT {}ms).", sys.resolved_ips, sys.rtt_ms.unwrap_or(0))
         } else {

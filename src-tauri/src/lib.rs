@@ -330,41 +330,47 @@ pub mod commands {
     pub async fn auto_troubleshoot_and_select() -> Result<diag::free_hub::AutoTroubleshootReport, String> {
         diag::free_hub::auto_troubleshoot_and_select().await
     }
+
+    #[tauri::command]
+    pub async fn get_antigravity_status() -> Result<diag::antigravity_unlock::AntigravityDoctorReport, String> {
+        Ok(diag::antigravity_unlock::audit_antigravity_doctor().await)
+    }
+
+    #[tauri::command]
+    pub fn apply_antigravity_unlock(profile: String) -> Result<String, String> {
+        diag::antigravity_unlock::apply_antigravity_unlock_profile(&profile)
+    }
+
+    #[tauri::command]
+    pub fn rollback_antigravity_unlock() -> Result<String, String> {
+        diag::antigravity_unlock::rollback_antigravity_unlock()
+    }
 }
 
-use tauri::Manager;
+use std::io::Write;
+
+fn log_step(msg: &str) {
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open("C:\\AI Access Doctor\\debug_step.log") {
+        let _ = writeln!(f, "[{}] {}", Utc::now(), msg);
+    }
+}
 
 pub fn run() {
-    let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
-    let _ = std::fs::write(log_file, format!("Starting AI Access Doctor at {}\n", Utc::now()));
+    log_step("1. Start run");
 
-    let app = tauri::Builder::default()
+    let storage = DiagnosticStorage::new();
+    log_step("2. After DiagnosticStorage::new");
+
+    let builder = tauri::Builder::default();
+    log_step("3. After Builder::default");
+
+    let res = builder
         .manage(AppState {
-            storage: Mutex::new(DiagnosticStorage::new()),
+            storage: Mutex::new(storage),
         })
-        .setup(|app| {
-            let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
-            if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(log_file) {
-                use std::io::Write;
-                let _ = writeln!(f, "In setup hook. Checking webview windows...");
-                for (label, win) in app.webview_windows() {
-                    let _ = writeln!(
-                        f,
-                        "Window '{}': is_visible={:?}, url={:?}",
-                        label,
-                        win.is_visible(),
-                        win.url()
-                    );
-                }
-            }
+        .setup(|_app| {
+            log_step("4. In setup hook!");
             Ok(())
-        })
-        .on_window_event(|window, event| {
-            let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
-            if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(log_file) {
-                use std::io::Write;
-                let _ = writeln!(f, "Window '{}' event: {:?}", window.label(), event);
-            }
         })
         .invoke_handler(tauri::generate_handler![
             commands::run_full_diagnostics,
@@ -385,15 +391,14 @@ pub fn run() {
             commands::apply_one_click_preset,
             commands::rollback_all_settings,
             commands::auto_troubleshoot_and_select,
+            commands::get_antigravity_status,
+            commands::apply_antigravity_unlock,
+            commands::rollback_antigravity_unlock,
         ])
-        .build(tauri::generate_context!())
-        .expect("error while building tauri application");
+        .run(tauri::generate_context!());
 
-    app.run(|_app_handle, event| {
-        let log_file = "C:\\AI Access Doctor\\app_lifecycle.log";
-        if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(log_file) {
-            use std::io::Write;
-            let _ = writeln!(f, "RunEvent: {:?}", event);
-        }
-    });
+    match res {
+        Ok(_) => log_step("5. run() exited with Ok"),
+        Err(e) => log_step(&format!("5. run() exited with Err: {:?}", e)),
+    }
 }

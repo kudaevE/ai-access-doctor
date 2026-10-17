@@ -359,3 +359,33 @@ export interface AutoTroubleshootReport {
   tested_dns: TestedOption[];
   timestamp: string;
 }
+
+export interface NrptRuleSummary {
+  name: string;
+  namespace: string[];
+  name_servers: string[];
+  comment: string;
+}
+
+export interface AntigravityDoctorReport {
+  ide_installed: boolean;
+  ide_path?: string;
+  ide_version?: string;
+  language_server_installed: boolean;
+  language_server_path?: string;
+  language_server_size_mb?: number;
+  ag_dns_running: boolean;
+  ag_dns_pid?: number;
+  loopback_relay_ready: boolean;
+  nrpt_active: boolean;
+  nrpt_rules: NrptRuleSummary[];
+  ipv4_preferred: boolean;
+  cloudcode_direct_status: string;
+  cloudcode_rtt_ms?: number;
+  accounts_status: string;
+  accounts_ip?: string;
+  ag_ls_proxy_env?: string;
+  overall_status_ru: string;
+  status_badge: "OPTIMAL" | "WARNING" | "DISABLED";
+}
+

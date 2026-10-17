@@ -3,6 +3,7 @@ import { Sidebar, TabType } from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { DashboardView } from "./components/DashboardView";
 import { ErrorDetectiveView } from "./components/ErrorDetectiveView";
+import { AntigravityDoctorView } from "./components/AntigravityDoctorView";
 import { FreeHubView } from "./components/FreeHubView";
 import { ConnectionComparisonView } from "./components/ConnectionComparisonView";
 import { IdeDoctorView } from "./components/IdeDoctorView";
@@ -499,6 +500,8 @@ export const App: React.FC = () => {
               onOpenFixModal={() => setIsFixModalOpen(true)}
             />
           )}
+
+          {activeTab === "antigravity_doctor" && <AntigravityDoctorView />}
 
           {activeTab === "free_hub" && <FreeHubView />}
 

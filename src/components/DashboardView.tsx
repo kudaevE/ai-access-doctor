@@ -262,6 +262,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         )}
       </div>
 
+      {/* Antigravity Fast-Access Banner */}
+      <div
+        onClick={() => onSelectTab("antigravity_doctor")}
+        className="p-4 rounded-xl bg-gradient-to-r from-sky-500/10 via-surface to-indigo-500/10 border border-sky-500/30 hover:border-sky-500/60 cursor-pointer transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm hover:shadow-sky-500/5 group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 group-hover:scale-105 transition-transform">
+            <Zap className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-white text-sm">
+                Antigravity & Google AI Unlocker (РФ / СНГ)
+              </span>
+              <span className="px-1.5 py-0.2 text-[10px] font-bold rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                1-Click
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Устранение region-400, раздельное DNS-разрешение через Windows NRPT и оптимизация IPv4
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-sky-400 group-hover:text-sky-300 shrink-0">
+          <span>Открыть модуль</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
+
       {/* 5 Top Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
         {/* Card 1: Состояние подключений */}

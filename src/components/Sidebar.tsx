@@ -15,11 +15,13 @@ import {
   Layers,
   Code2,
   Globe,
+  Zap,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
 
 export type TabType =
   | "dashboard"
+  | "antigravity_doctor"
   | "free_hub"
   | "detective"
   | "services"
@@ -50,6 +52,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: "Дашборд",
       icon: LayoutDashboard,
       badge: isRunning ? "Тест..." : null,
+    },
+    {
+      id: "antigravity_doctor" as TabType,
+      label: "Antigravity Doctor",
+      icon: Zap,
+      badge: "AG РФ",
+      badgeColor: "bg-sky-500/20 text-sky-300 border border-sky-500/30",
     },
     {
       id: "free_hub" as TabType,
