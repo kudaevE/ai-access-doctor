@@ -4,10 +4,15 @@ pub mod services;
 pub mod storage;
 
 use chrono::Utc;
+use diag::comparison::{run_connection_matrix, ConnectionMatrixReport};
 use diag::dns::{diagnose_dns_targets, DnsDiagnostics};
+use diag::ide::{diagnose_ide_configs, IdeConfigAudit};
+use diag::mcp::{diagnose_mcp_configs, McpFileAudit};
 use diag::network::{diagnose_network, NetworkDiagnostics};
 use diag::proxy::{diagnose_proxies, ProxyDiagnostics};
 use diag::vpn::{diagnose_vpn, VpnDiagnostics};
+use engine::detective::{analyze_error_text, ErrorDetectiveResult};
+use engine::fix::{execute_safe_fix, get_available_fixes, FixExecutionResult, FixPreview};
 use engine::rules::{evaluate_root_cause, DiagnosticVerdict};
 use serde::{Deserialize, Serialize};
 use services::{
@@ -268,6 +273,38 @@ pub mod commands {
             }
         }
     }
+
+    #[tauri::command]
+    pub async fn analyze_error_log(error_text: String) -> Result<ErrorDetectiveResult, String> {
+        Ok(analyze_error_text(&error_text))
+    }
+
+    #[tauri::command]
+    pub async fn compare_connection_routes(
+        target_url: Option<String>,
+    ) -> Result<ConnectionMatrixReport, String> {
+        Ok(run_connection_matrix(target_url.as_deref()).await)
+    }
+
+    #[tauri::command]
+    pub async fn get_ide_audits() -> Result<Vec<IdeConfigAudit>, String> {
+        Ok(diagnose_ide_configs())
+    }
+
+    #[tauri::command]
+    pub async fn get_mcp_audits() -> Result<Vec<McpFileAudit>, String> {
+        Ok(diagnose_mcp_configs())
+    }
+
+    #[tauri::command]
+    pub async fn get_safe_fixes() -> Result<Vec<FixPreview>, String> {
+        Ok(get_available_fixes())
+    }
+
+    #[tauri::command]
+    pub async fn apply_safe_fix(fix_id: String) -> Result<FixExecutionResult, String> {
+        execute_safe_fix(&fix_id)
+    }
 }
 
 pub fn run() {
@@ -283,6 +320,12 @@ pub fn run() {
             commands::get_history,
             commands::get_report_by_id,
             commands::export_report,
+            commands::analyze_error_log,
+            commands::compare_connection_routes,
+            commands::get_ide_audits,
+            commands::get_mcp_audits,
+            commands::get_safe_fixes,
+            commands::apply_safe_fix,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

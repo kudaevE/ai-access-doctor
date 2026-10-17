@@ -1,9 +1,15 @@
 export type VerdictState = "HEALTHY" | "WARNING" | "CRITICAL_ISSUE" | "UNKNOWN";
 
+export type EvidenceStrength = "CONFIRMED_FACT" | "STRONGLY_SUPPORTED" | "HYPOTHESIS" | "INCONCLUSIVE";
+
+export type ServiceAvailability = "AVAILABLE" | "AUTH REQUIRED" | "DEGRADED" | "UNAVAILABLE" | "UNKNOWN";
+
 export interface DiagnosticVerdict {
   overall_state: VerdictState;
   primary_issue_code: string;
   confidence_percent: number;
+  evidence_strength: EvidenceStrength;
+  confirmed_facts: string[];
   title_ru: string;
   explanation_ru: string;
   technical_evidence: string[];
@@ -11,6 +17,18 @@ export interface DiagnosticVerdict {
   passed_checks_count: number;
   warning_checks_count: number;
   failed_checks_count: number;
+}
+
+export interface ErrorDetectiveResult {
+  category: string;
+  error_code: string;
+  title_ru: string;
+  meaning_ru: string;
+  confirmed_facts: string[];
+  likely_cause_ru: string;
+  suggested_tests: string[];
+  safe_fix_ru: string[];
+  sanitized_input: string;
 }
 
 export interface InterfaceInfo {
@@ -203,4 +221,73 @@ export interface ProgressUpdate {
   stage: string;
   percent: number;
   message: string;
+}
+
+export interface ChannelProbeResult {
+  channel_id: string;
+  channel_name: string;
+  channel_type: string;
+  is_available: boolean;
+  latency_ms: number;
+  http_status?: number;
+  status_text: string;
+  details_ru: string;
+}
+
+export interface ConnectionMatrixReport {
+  target_url: string;
+  target_name: string;
+  timestamp: string;
+  results: ChannelProbeResult[];
+  comparative_verdict_ru: string;
+}
+
+export interface IdeConfigAudit {
+  ide_id: string;
+  ide_name: string;
+  is_installed: boolean;
+  config_path?: string;
+  proxy_configured?: string;
+  strict_ssl?: boolean;
+  status: string;
+  diagnosis_ru: string;
+  recommendation_ru?: string;
+}
+
+export interface McpServerAudit {
+  name: string;
+  transport_type: string;
+  command_or_url: string;
+  is_executable_found: boolean;
+  status: string;
+  details_ru: string;
+}
+
+export interface McpFileAudit {
+  client_name: string;
+  file_path: string;
+  exists: boolean;
+  is_valid_json: boolean;
+  servers_count: number;
+  servers: McpServerAudit[];
+  recommendation_ru?: string;
+}
+
+export interface FixPreview {
+  fix_id: string;
+  title_ru: string;
+  description_ru: string;
+  command_preview: string;
+  subsystem: string;
+  is_destructive: boolean;
+  requires_admin: boolean;
+  rollback_preview: string;
+}
+
+export interface FixExecutionResult {
+  success: boolean;
+  snapshot_id: string;
+  message_ru: string;
+  stdout: string;
+  stderr: string;
 }

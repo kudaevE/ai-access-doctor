@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Sidebar, TabType } from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { DashboardView } from "./components/DashboardView";
+import { ErrorDetectiveView } from "./components/ErrorDetectiveView";
+import { ConnectionComparisonView } from "./components/ConnectionComparisonView";
+import { IdeDoctorView } from "./components/IdeDoctorView";
+import { SafeFixModal } from "./components/SafeFixModal";
 import { AiServicesView } from "./components/AiServicesView";
 import { NetworkProxyView } from "./components/NetworkProxyView";
 import { VpnRoutingView } from "./components/VpnRoutingView";
@@ -24,6 +28,12 @@ const DEMO_REPORT: FullDiagnosticReport = {
     overall_state: "CRITICAL_ISSUE",
     primary_issue_code: "PROXY_ENV_CONFLICT",
     confidence_percent: 96,
+    evidence_strength: "CONFIRMED_FACT",
+    confirmed_facts: [
+      "Переменная окружения HTTPS_PROXY указывает на порт 127.0.0.1:53200 (возвращает 502 Bad Gateway)",
+      "Системный прокси Windows (WinINet) настроен на 127.0.0.1:10809 и успешно туннелирует трафик",
+      "Прямой зонд dual-stack IPv4 активен через шлюз 192.168.1.1",
+    ],
     title_ru: "Конфликт системного прокси Windows и переменных окружения",
     explanation_ru:
       "В системе обнаружен конфликт портов: в реестре Windows активен работающий прокси (127.0.0.1:10809), однако в терминале установлены переменные окружения HTTP_PROXY / HTTPS_PROXY, указывающие на порт 127.0.0.1:53200, который возвращает ошибку 502 Bad Gateway. Браузер работает, но консольные утилиты (npm, git, Python, curl) аварийно завершаются.",
@@ -366,6 +376,7 @@ export const App: React.FC = () => {
   const [progress, setProgress] = useState<ProgressUpdate | null>(null);
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   const [proxyOverride, setProxyOverride] = useState<string>("");
+  const [isFixModalOpen, setIsFixModalOpen] = useState<boolean>(false);
 
   // Load history on mount
   useEffect(() => {
@@ -475,14 +486,22 @@ export const App: React.FC = () => {
           {activeTab === "dashboard" && (
             <DashboardView
               report={report}
+              history={history}
               isRunning={isRunning}
               progress={progress}
               onRunDiagnostics={runDiagnostics}
               onSelectTab={setActiveTab}
+              onOpenFixModal={() => setIsFixModalOpen(true)}
             />
           )}
 
+          {activeTab === "detective" && <ErrorDetectiveView />}
+
           {activeTab === "services" && <AiServicesView report={report} />}
+
+          {activeTab === "comparison" && <ConnectionComparisonView />}
+
+          {activeTab === "ide_doctor" && <IdeDoctorView />}
 
           {activeTab === "network" && <NetworkProxyView report={report} />}
 
@@ -507,6 +526,15 @@ export const App: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Safe Fix Center Modal */}
+      <SafeFixModal
+        isOpen={isFixModalOpen}
+        onClose={() => setIsFixModalOpen(false)}
+        onSuccess={() => {
+          runDiagnostics();
+        }}
+      />
     </div>
   );
 };

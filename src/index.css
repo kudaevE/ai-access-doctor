@@ -8,38 +8,39 @@
   }
 
   body {
-    background-color: #0b0f19;
-    color: #e2e8f0;
+    background-color: #0B1019;
+    color: #E2E8F0;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     user-select: none;
     -webkit-user-select: none;
+    overflow: hidden;
   }
 }
 
-/* Custom sleek scrollbar */
+/* Custom sleek developer scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b0f19;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #223047;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #39BDF8;
 }
 
 /* Glass & Card styles */
 .glass-panel {
-  background: rgba(17, 24, 39, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(21, 30, 45, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -48,6 +49,13 @@
 }
 
 .card-hover:hover {
-  border-color: rgba(56, 189, 248, 0.3);
+  border-color: rgba(57, 189, 248, 0.4);
   transform: translateY(-1px);
+}
+
+/* Code block highlighting style */
+.terminal-block {
+  background: #080C14;
+  border: 1px solid #223047;
+  font-family: "JetBrains Mono", Consolas, monospace;
 }

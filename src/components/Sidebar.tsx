@@ -11,12 +11,18 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
+  Sparkles,
+  Layers,
+  Code2,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
 
 export type TabType =
   | "dashboard"
+  | "detective"
   | "services"
+  | "comparison"
+  | "ide_doctor"
   | "network"
   | "vpn"
   | "errors"
@@ -44,17 +50,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: isRunning ? "Тест..." : null,
     },
     {
+      id: "detective" as TabType,
+      label: "Детектив ошибок",
+      icon: Sparkles,
+      badge: "P0",
+      badgeColor: "bg-primary/20 text-primary border border-primary/30",
+    },
+    {
       id: "services" as TabType,
       label: "ИИ-сервисы",
       icon: Cpu,
-      badge: report?.services ? `${report.services.filter((s) => s.overall_status === "pass").length}/${report.services.length}` : null,
+      badge: report?.services
+        ? `${report.services.filter((s) => s.status_kind === "Pass" || s.status_kind === "AuthBoundary").length}/${report.services.length}`
+        : null,
+    },
+    {
+      id: "comparison" as TabType,
+      label: "Сравнение каналов",
+      icon: Layers,
+      badge: "Matrix",
+      badgeColor: "bg-sky-500/20 text-sky-300 border border-sky-500/30",
+    },
+    {
+      id: "ide_doctor" as TabType,
+      label: "IDE & MCP Doctor",
+      icon: Code2,
     },
     {
       id: "network" as TabType,
       label: "Сеть и Прокси",
       icon: Network,
       badge: report?.proxy.has_conflict ? "Конфликт" : null,
-      badgeColor: report?.proxy.has_conflict ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" : undefined,
+      badgeColor: report?.proxy.has_conflict
+        ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+        : undefined,
     },
     {
       id: "vpn" as TabType,
@@ -67,7 +96,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: "errors" as TabType,
       label: "Анализ причин",
       icon: AlertOctagon,
-      badge: report && report.verdict.failed_checks_count > 0 ? `${report.verdict.failed_checks_count}` : null,
+      badge:
+        report && report.verdict.failed_checks_count > 0
+          ? `${report.verdict.failed_checks_count}`
+          : null,
       badgeColor: "bg-rose-500/20 text-rose-400 border border-rose-500/30",
     },
     {
@@ -117,7 +149,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="w-64 bg-surface border-r border-surface-border flex flex-col h-screen select-none">
+    <aside className="w-64 bg-sidebar border-r border-surface-border flex flex-col h-screen select-none shrink-0">
       {/* Brand & App Title */}
       <div className="p-4 border-b border-surface-border/60 flex items-center space-x-3">
         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary via-accent-cyan to-accent-emerald flex items-center justify-center shadow-lg shadow-primary/20">
@@ -126,8 +158,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div>
           <h1 className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
             AI Access Doctor
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-              v1.0
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/25">
+              v2.0
             </span>
           </h1>
           <p className="text-[11px] text-slate-400">Windows AI Diagnostic Suite</p>
@@ -135,9 +167,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Navigation links */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-300 px-3 py-2">
-          Навигация
+      <nav className="flex-1 p-2.5 space-y-1 overflow-y-auto">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 px-3 py-2">
+          Навигация платформы
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -146,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                 isActive
                   ? "bg-primary/15 text-primary border border-primary/30 shadow-sm"
                   : "text-slate-300 hover:text-white hover:bg-surface-elevated/70"
@@ -158,8 +190,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               {item.badge && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
-                    item.badgeColor || "bg-surface-elevated text-slate-300 border border-surface-border"
+                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded-md ${
+                    item.badgeColor ||
+                    "bg-surface-elevated text-slate-400 border border-surface-border"
                   }`}
                 >
                   {item.badge}
@@ -171,20 +204,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Bottom Status Card */}
-      <div className="p-3 border-t border-surface-border/60 bg-surface-elevated/40">
-        <div className="p-2.5 rounded-lg border border-surface-border bg-slate-950/40">
+      <div className="p-3 border-t border-surface-border/60 bg-surface/50">
+        <div className="p-2.5 rounded-xl border border-surface-border bg-slate-950/60">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] text-slate-400">Статус системы:</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+              Статус системы:
+            </span>
             {getStatusIcon()}
           </div>
           <div className="text-xs font-semibold text-slate-200 truncate">
             {getStatusText()}
           </div>
           {report && (
-            <div className="mt-1.5 pt-1.5 border-t border-surface-border/50 text-[10px] text-slate-300 flex justify-between">
-              <span>Достоверность:</span>
+            <div className="mt-1.5 pt-1.5 border-t border-surface-border/50 text-[10px] text-slate-400 flex justify-between">
+              <span>Доказательства:</span>
               <span className="font-mono text-primary font-bold">
-                {report.verdict.confidence_percent}%
+                {report.verdict.evidence_strength || "CONFIRMED"}
               </span>
             </div>
           )}
