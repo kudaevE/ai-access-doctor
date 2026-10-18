@@ -19,6 +19,8 @@ import {
   Sparkles,
   Video,
   Globe,
+  Gauge,
+  Network,
 } from "lucide-react";
 import { FullDiagnosticReport, HistoryRecordSummary, ProgressUpdate, ServiceAvailability } from "../types";
 
@@ -265,60 +267,120 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Fast-Access Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* Card 1: Antigravity Doctor */}
         <div
           onClick={() => onSelectTab("antigravity_doctor")}
-          className="p-4 rounded-xl bg-gradient-to-r from-sky-500/10 via-surface to-indigo-500/10 border border-sky-500/30 hover:border-sky-500/60 cursor-pointer transition-all flex items-center justify-between gap-3 shadow-sm hover:shadow-sky-500/5 group"
+          className="p-3.5 rounded-xl bg-gradient-to-r from-sky-500/10 via-surface to-indigo-500/10 border border-sky-500/30 hover:border-sky-500/60 cursor-pointer transition-all flex flex-col justify-between gap-3 shadow-sm hover:shadow-sky-500/5 group"
         >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 group-hover:scale-105 transition-transform shrink-0">
-              <Zap className="w-5 h-5" />
+          <div className="flex items-start gap-2.5">
+            <div className="p-2 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 group-hover:scale-105 transition-transform shrink-0">
+              <Zap className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-white text-sm">
-                  Antigravity Doctor (РФ / СНГ)
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white text-xs">
+                  Antigravity РФ
                 </span>
-                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
                   NRPT
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Обход region-400, разблокировка cloudcode-pa и приоритет IPv4
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Обход region-400 и разблокировка cloudcode
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-xs font-semibold text-sky-400 group-hover:text-sky-300 shrink-0">
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center justify-end gap-1 text-[11px] font-semibold text-sky-400 group-hover:text-sky-300">
+            <span>Открыть</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
 
         {/* Card 2: Google Flow Studio */}
         <div
           onClick={() => onSelectTab("google_flow")}
-          className="p-4 rounded-xl bg-gradient-to-r from-purple-500/10 via-surface to-pink-500/10 border border-purple-500/30 hover:border-purple-500/60 cursor-pointer transition-all flex items-center justify-between gap-3 shadow-sm hover:shadow-purple-500/5 group"
+          className="p-3.5 rounded-xl bg-gradient-to-r from-purple-500/10 via-surface to-pink-500/10 border border-purple-500/30 hover:border-purple-500/60 cursor-pointer transition-all flex flex-col justify-between gap-3 shadow-sm hover:shadow-purple-500/5 group"
         >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 group-hover:scale-105 transition-transform shrink-0">
-              <Video className="w-5 h-5" />
+          <div className="flex items-start gap-2.5">
+            <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 group-hover:scale-105 transition-transform shrink-0">
+              <Video className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-white text-sm">
-                  Google Flow Studio (Veo ИИ)
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white text-xs">
+                  Google Flow (Veo)
                 </span>
-                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
                   Chrome
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Запуск flow.google.com в браузере с готовым расширением обхода
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Запуск в браузере с авто-расширением
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-xs font-semibold text-purple-400 group-hover:text-purple-300 shrink-0">
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center justify-end gap-1 text-[11px] font-semibold text-purple-400 group-hover:text-purple-300">
+            <span>Открыть</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
+        {/* Card 3: AI Speed Benchmark */}
+        <div
+          onClick={() => onSelectTab("speed_benchmark")}
+          className="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/10 via-surface to-orange-500/10 border border-amber-500/30 hover:border-amber-500/60 cursor-pointer transition-all flex flex-col justify-between gap-3 shadow-sm hover:shadow-amber-500/5 group"
+        >
+          <div className="flex items-start gap-2.5">
+            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 group-hover:scale-105 transition-transform shrink-0">
+              <Gauge className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white text-xs">
+                  Спидтест ИИ
+                </span>
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  Ping RTT
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Замер задержки Groq, Gemini, PA, OpenAI
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-1 text-[11px] font-semibold text-amber-400 group-hover:text-amber-300">
+            <span>Тестировать</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
+        {/* Card 4: Hosts & Terminal Proxy */}
+        <div
+          onClick={() => onSelectTab("network")}
+          className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-surface to-teal-500/10 border border-emerald-500/30 hover:border-emerald-500/60 cursor-pointer transition-all flex flex-col justify-between gap-3 shadow-sm hover:shadow-emerald-500/5 group"
+        >
+          <div className="flex items-start gap-2.5">
+            <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 group-hover:scale-105 transition-transform shrink-0">
+              <Network className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white text-xs">
+                  Hosts & CLI Sync
+                </span>
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Fix
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                Очистка hosts и синхронизация Git/npm
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-1 text-[11px] font-semibold text-emerald-400 group-hover:text-emerald-300">
+            <span>Управление</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
       </div>

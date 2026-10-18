@@ -375,12 +375,107 @@ pub mod commands {
     pub fn flush_dns_cache() -> Result<String, String> {
         diag::dns::flush_dns_cache()
     }
+
+    #[tauri::command]
+    pub fn get_hosts_report() -> Result<diag::hosts_doctor::HostsDoctorReport, String> {
+        Ok(diag::hosts_doctor::audit_hosts_file())
+    }
+
+    #[tauri::command]
+    pub fn clean_ai_hosts() -> Result<String, String> {
+        diag::hosts_doctor::clean_ai_hosts_entries()
+    }
+
+    #[tauri::command]
+    pub fn open_etc_folder() -> Result<String, String> {
+        diag::hosts_doctor::open_etc_directory()
+    }
+
+    #[tauri::command]
+    pub fn get_cli_proxy_info() -> Result<diag::cli_proxy::CliProxyStatus, String> {
+        Ok(diag::cli_proxy::get_cli_proxy_status())
+    }
+
+    #[tauri::command]
+    pub fn apply_cli_proxy(proxy_url: String) -> Result<String, String> {
+        diag::cli_proxy::apply_cli_proxy(&proxy_url)
+    }
+
+    #[tauri::command]
+    pub fn reset_cli_proxy() -> Result<String, String> {
+        diag::cli_proxy::reset_cli_proxy()
+    }
+
+    #[tauri::command]
+    pub async fn run_ai_speed_benchmark() -> Result<diag::speed_benchmark::SpeedBenchmarkReport, String> {
+        Ok(diag::speed_benchmark::run_ai_speed_benchmark().await)
+    }
 }
 
 pub fn run() {
     tauri::Builder::default()
         .manage(AppState {
             storage: Mutex::new(DiagnosticStorage::new()),
+        })
+        .setup(|app| {
+            use tauri::menu::{Menu, MenuItem};
+            use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+            use tauri::Manager;
+
+            let show_i = MenuItem::with_id(app, "show", "Показать AI Access Doctor", true, None::<&str>)?;
+            let dns_i = MenuItem::with_id(app, "flush_dns", "Сбросить кэш DNS", true, None::<&str>)?;
+            let quit_i = MenuItem::with_id(app, "quit", "Выход", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&show_i, &dns_i, &quit_i])?;
+
+            let mut tray_builder = TrayIconBuilder::new()
+                .menu(&menu)
+                .show_menu_on_left_click(false)
+                .on_menu_event(|app, event| {
+                    match event.id.as_ref() {
+                        "show" => {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.unminimize();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        "flush_dns" => {
+                            let _ = diag::dns::flush_dns_cache();
+                        }
+                        "quit" => {
+                            app.exit(0);
+                        }
+                        _ => {}
+                    }
+                })
+                .on_tray_icon_event(|tray, event| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.unminimize();
+                            let _ = window.set_focus();
+                        }
+                    }
+                });
+
+            let icon_res = app.default_window_icon().cloned().or_else(|| {
+                tauri::image::Image::from_app_icon_resource(32).ok()
+            });
+
+            if let Some(icon) = icon_res {
+                tray_builder = tray_builder.icon(icon);
+                if let Err(err) = tray_builder.build(app) {
+                    eprintln!("Failed to initialize system tray: {}", err);
+                }
+            }
+
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             commands::run_full_diagnostics,
@@ -410,6 +505,13 @@ pub fn run() {
             commands::open_extension_folder,
             commands::open_extensions_manager_in_browser,
             commands::flush_dns_cache,
+            commands::get_hosts_report,
+            commands::clean_ai_hosts,
+            commands::open_etc_folder,
+            commands::get_cli_proxy_info,
+            commands::apply_cli_proxy,
+            commands::reset_cli_proxy,
+            commands::run_ai_speed_benchmark,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

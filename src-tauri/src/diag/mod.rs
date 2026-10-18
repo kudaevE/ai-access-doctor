@@ -1,12 +1,15 @@
 pub mod antigravity_unlock;
+pub mod cli_proxy;
 pub mod comparison;
 pub mod dns;
 pub mod flow_unlocker;
 pub mod free_hub;
+pub mod hosts_doctor;
 pub mod ide;
 pub mod mcp;
 pub mod network;
 pub mod proxy;
+pub mod speed_benchmark;
 pub mod tls;
 pub mod vpn;
 

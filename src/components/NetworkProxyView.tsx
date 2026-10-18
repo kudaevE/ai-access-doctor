@@ -12,6 +12,8 @@ import {
   Wifi,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
+import { CliProxySection } from "./CliProxySection";
+import { HostsDoctorSection } from "./HostsDoctorSection";
 
 interface NetworkProxyViewProps {
   report: FullDiagnosticReport | null;
@@ -26,19 +28,8 @@ export const NetworkProxyView: React.FC<NetworkProxyViewProps> = ({ report }) =>
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  if (!report) {
-    return (
-      <div className="p-12 text-center border border-dashed border-surface-border rounded-2xl bg-surface/50">
-        <Network className="w-10 h-10 text-slate-500 mx-auto mb-3" />
-        <h3 className="text-sm font-bold text-white">Сеть еще не исследована</h3>
-        <p className="text-xs text-slate-400 mt-1">
-          Запустите диагностику для сбора информации об интерфейсах, прокси и DNS.
-        </p>
-      </div>
-    );
-  }
-
-  const { proxy, network } = report;
+  const proxy = report?.proxy;
+  const network = report?.network;
 
   return (
     <div className="space-y-6">
@@ -47,9 +38,26 @@ export const NetworkProxyView: React.FC<NetworkProxyViewProps> = ({ report }) =>
           Сетевые адаптеры и конфигурация прокси
         </h2>
         <p className="text-xs text-slate-400 mt-0.5">
-          Аудит системного прокси Windows (WinINet), WinHTTP, переменных окружения и адаптеров.
+          Аудит системного прокси Windows (WinINet), WinHTTP, терминального прокси (Git/npm), hosts и сетевых адаптеров.
         </p>
       </div>
+
+      {/* 1-Click Terminal & CLI Proxy Sync */}
+      <CliProxySection />
+
+      {/* Hosts File Doctor */}
+      <HostsDoctorSection />
+
+      {!report || !proxy || !network ? (
+        <div className="p-8 text-center border border-dashed border-surface-border rounded-2xl bg-surface/50">
+          <Network className="w-9 h-9 text-slate-500 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-white">Расширенный аудит сетевых интерфейсов</h3>
+          <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+            Нажмите «Запустить диагностику» в шапке приложения для сбора детального отчета о таблице WinINet, WinHTTP и сетевых адаптерах Windows.
+          </p>
+        </div>
+      ) : (
+        <>
 
       {/* Proxy Conflict Alert Box */}
       {proxy.has_conflict && (
@@ -327,6 +335,8 @@ export const NetworkProxyView: React.FC<NetworkProxyViewProps> = ({ report }) =>
           </table>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

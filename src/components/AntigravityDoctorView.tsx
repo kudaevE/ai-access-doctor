@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { AntigravityDoctorReport } from "../types";
+import { HostsDoctorSection } from "./HostsDoctorSection";
 
 export const AntigravityDoctorView: React.FC = () => {
   const [data, setData] = useState<AntigravityDoctorReport | null>(null);
@@ -695,6 +696,9 @@ export const AntigravityDoctorView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Hosts Doctor Section */}
+      <HostsDoctorSection />
 
       {/* Educational Callout */}
       <div className="bg-surface/30 border border-border/40 rounded-xl p-5 space-y-3">

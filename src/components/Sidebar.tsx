@@ -17,6 +17,7 @@ import {
   Globe,
   Zap,
   Video,
+  Gauge,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
 
@@ -24,6 +25,7 @@ export type TabType =
   | "dashboard"
   | "antigravity_doctor"
   | "google_flow"
+  | "speed_benchmark"
   | "free_hub"
   | "detective"
   | "services"
@@ -68,6 +70,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Video,
       badge: "Veo ИИ",
       badgeColor: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
+    },
+    {
+      id: "speed_benchmark" as TabType,
+      label: "Спидтест ИИ",
+      icon: Gauge,
+      badge: "Ping",
+      badgeColor: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
     },
     {
       id: "free_hub" as TabType,

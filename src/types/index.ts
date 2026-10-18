@@ -397,3 +397,54 @@ export interface FlowUnlockInfo {
   extension_folder_path: string;
   default_browser_name: string;
 }
+
+export interface HostsEntryInfo {
+  line_number: number;
+  ip: string;
+  domain: string;
+  is_ai_domain: boolean;
+  is_commented: boolean;
+  is_suspicious_or_dead: boolean;
+  note_ru: string;
+}
+
+export interface HostsDoctorReport {
+  hosts_path: string;
+  total_lines: number;
+  ai_entries_count: number;
+  suspicious_entries_count: number;
+  entries: HostsEntryInfo[];
+  has_backup: boolean;
+  status_ru: string;
+}
+
+export interface CliProxyStatus {
+  git_proxy?: string;
+  npm_proxy?: string;
+  env_http_proxy?: string;
+  env_https_proxy?: string;
+  is_any_configured: boolean;
+  effective_summary_ru: string;
+}
+
+export interface BenchmarkTargetResult {
+  id: string;
+  name: string;
+  category: string;
+  endpoint: string;
+  latency_ms?: number;
+  http_status?: number;
+  is_available: boolean;
+  speed_rating: "ULTRA_FAST" | "FAST" | "NORMAL" | "SLOW" | "BLOCKED";
+  note_ru: string;
+}
+
+export interface SpeedBenchmarkReport {
+  timestamp: string;
+  fastest_provider_name?: string;
+  fastest_provider_rtt_ms?: number;
+  total_tested: number;
+  available_count: number;
+  results: BenchmarkTargetResult[];
+  recommendation_ru: string;
+}
