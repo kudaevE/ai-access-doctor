@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#78350f" stop-opacity="0.05" />
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .font-mono { font-family: 'Cascadia Code', 'Fira Code', Consolas, Monaco, monospace; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="780" fill="url(#bg)" />
+
+  <!-- App Window Container -->
+  <rect x="20" y="20" width="1160" height="740" rx="16" fill="#030712" stroke="#1f2937" stroke-width="1.5" />
+
+  <!-- Window Header Bar -->
+  <rect x="20" y="20" width="1160" height="48" rx="16" fill="#0f172a" />
+  <rect x="20" y="52" width="1160" height="16" fill="#0f172a" />
+  <line x1="20" y1="68" x2="1180" y2="68" stroke="#1f2937" stroke-width="1" />
+  <circle cx="44" cy="44" r="6" fill="#ef4444" />
+  <circle cx="64" cy="44" r="6" fill="#f59e0b" />
+  <circle cx="84" cy="44" r="6" fill="#10b981" />
+  <text x="580" y="49" fill="#94a3b8" font-size="12" font-weight="600" text-anchor="middle" class="font-sans">
+    AI Access Doctor — Спидтест и матрица задержки ИИ-провайдеров
+  </text>
+
+  <!-- SIDEBAR (Left 240px) -->
+  <rect x="20" y="68" width="240" height="692" fill="#0b0f19" />
+  <line x1="260" y1="68" x2="260" y2="760" stroke="#1f2937" stroke-width="1" />
+  <text x="40" y="112" fill="#ffffff" font-size="14" font-weight="bold" class="font-sans">AI Access Doctor</text>
+  <text x="40" y="126" fill="#38bdf8" font-size="10" font-weight="600" class="font-sans">v1.0.0 • Windows x64</text>
+
+  <text x="68" y="170" fill="#94a3b8" font-size="12" class="font-sans">Дашборд</text>
+  <text x="68" y="210" fill="#94a3b8" font-size="12" class="font-sans">Antigravity Doctor</text>
+  <text x="68" y="250" fill="#94a3b8" font-size="12" class="font-sans">Google Flow Studio</text>
+
+  <!-- Active Tab: Спидтест ИИ -->
+  <rect x="32" y="266" width="216" height="38" rx="10" fill="#f59e0b" fill-opacity="0.15" stroke="#f59e0b" stroke-opacity="0.3" />
+  <circle cx="52" cy="285" r="4" fill="#fbbf24" />
+  <text x="68" y="290" fill="#fbbf24" font-size="12" font-weight="600" class="font-sans">Спидтест ИИ</text>
+
+  <text x="68" y="330" fill="#94a3b8" font-size="12" class="font-sans">Сеть и Прокси</text>
+  <text x="68" y="370" fill="#94a3b8" font-size="12" class="font-sans">Детектив ошибок</text>
+
+  <!-- MAIN VIEWPORT -->
+  <rect x="280" y="84" width="880" height="54" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="116" fill="#f8fafc" font-size="15" font-weight="bold" class="font-sans">Спидтест и замер отклика ИИ-провайдеров</text>
+  <rect x="990" y="96" width="150" height="30" rx="8" fill="#d97706" />
+  <text x="1065" y="115" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">⚡ Повторить тест</text>
+
+  <!-- CHAMPION HERO BANNER -->
+  <rect x="280" y="150" width="880" height="110" rx="14" fill="url(#amberGlow)" stroke="#f59e0b" stroke-opacity="0.5" stroke-width="1.5" />
+  <circle cx="330" cy="205" r="30" fill="#f59e0b" fill-opacity="0.2" />
+  <text x="330" y="215" fill="#fbbf24" font-size="28" text-anchor="middle">🏆</text>
+
+  <rect x="380" y="170" width="130" height="20" rx="5" fill="#f59e0b" fill-opacity="0.25" />
+  <text x="445" y="184" fill="#fde68a" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">ЧЕМПИОН СКОРОСТИ</text>
+
+  <text x="380" y="214" fill="#ffffff" font-size="18" font-weight="bold" class="font-sans">
+    Groq LPU Cloud — 28 мс (Ультра-быстрый инференс)
+  </text>
+  <text x="380" y="238" fill="#fde68a" font-size="11" class="font-sans">
+    ● Средний пинг: <tspan font-weight="bold">60 мс</tspan> &nbsp;•&nbsp; 
+    Успешных эндпоинтов: <tspan font-weight="bold">9 / 9 (100%)</tspan> &nbsp;•&nbsp; 
+    Транспорт: <tspan font-weight="bold">HTTP/2 + TLS 1.3</tspan>
+  </text>
+
+  <!-- 3x3 MATRIX OF PROVIDERS -->
+  <!-- Row 1 -->
+  <!-- Groq -->
+  <rect x="280" y="275" width="280" height="110" rx="12" fill="#064e3b" fill-opacity="0.2" stroke="#10b981" stroke-width="1.5" />
+  <text x="300" y="302" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">Groq LPU Cloud</text>
+  <rect x="470" y="288" width="75" height="18" rx="5" fill="#10b981" fill-opacity="0.3" />
+  <text x="507" y="301" fill="#34d399" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">28 мс • Молния</text>
+  <text x="300" y="325" fill="#38bdf8" font-size="10" class="font-mono">api.groq.com</text>
+  <text x="300" y="345" fill="#94a3b8" font-size="10" class="font-sans">Ultra-Fast LPU Architecture • 401 Auth OK</text>
+  <text x="300" y="365" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Самый быстрый отклик из РФ</text>
+
+  <!-- Gemini -->
+  <rect x="580" y="275" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="600" y="302" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">Google Gemini API</text>
+  <rect x="770" y="288" width="75" height="18" rx="5" fill="#0284c7" fill-opacity="0.2" />
+  <text x="807" y="301" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">45 мс • Быстро</text>
+  <text x="600" y="325" fill="#38bdf8" font-size="10" class="font-mono">generativelanguage.googleapis.com</text>
+  <text x="600" y="345" fill="#94a3b8" font-size="10" class="font-sans">Gemini 1.5 Pro / Flash • HTTP 200</text>
+  <text x="600" y="365" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Маршрут очищен через NRPT</text>
+
+  <!-- Antigravity PA -->
+  <rect x="880" y="275" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="900" y="302" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">Google Antigravity PA</text>
+  <rect x="1070" y="288" width="75" height="18" rx="5" fill="#0284c7" fill-opacity="0.2" />
+  <text x="1107" y="301" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">52 мс • Быстро</text>
+  <text x="900" y="325" fill="#38bdf8" font-size="10" class="font-mono">cloudcode-pa.googleapis.com</text>
+  <text x="900" y="345" fill="#94a3b8" font-size="10" class="font-sans">Google CloudCode PA • HTTP 200</text>
+  <text x="900" y="365" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Обход region-400 подтвержден</text>
+
+  <!-- Row 2 -->
+  <!-- OpenRouter -->
+  <rect x="280" y="400" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="427" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">OpenRouter Gateway</text>
+  <rect x="470" y="413" width="75" height="18" rx="5" fill="#0284c7" fill-opacity="0.2" />
+  <text x="507" y="426" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">58 мс • Быстро</text>
+  <text x="300" y="450" fill="#38bdf8" font-size="10" class="font-mono">openrouter.ai</text>
+  <text x="300" y="470" fill="#94a3b8" font-size="10" class="font-sans">Unified Model Hub • HTTP 200</text>
+  <text x="300" y="490" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Прямой доступ без ограничений</text>
+
+  <!-- Cerebras -->
+  <rect x="580" y="400" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="600" y="427" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">Cerebras AI</text>
+  <rect x="770" y="413" width="75" height="18" rx="5" fill="#0284c7" fill-opacity="0.2" />
+  <text x="807" y="426" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">64 мс • Быстро</text>
+  <text x="600" y="450" fill="#38bdf8" font-size="10" class="font-mono">api.cerebras.ai</text>
+  <text x="600" y="470" fill="#94a3b8" font-size="10" class="font-sans">Llama 3.3 70B • 401 Auth OK</text>
+  <text x="600" y="490" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Канал чист</text>
+
+  <!-- GitHub Copilot -->
+  <rect x="880" y="400" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="900" y="427" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">GitHub Developer</text>
+  <rect x="1070" y="413" width="75" height="18" rx="5" fill="#0284c7" fill-opacity="0.2" />
+  <text x="1107" y="426" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">62 мс • Быстро</text>
+  <text x="900" y="450" fill="#38bdf8" font-size="10" class="font-mono">api.github.com</text>
+  <text x="900" y="470" fill="#94a3b8" font-size="10" class="font-sans">Copilot Proxy &amp; API • HTTP 200</text>
+  <text x="900" y="490" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Доступен для VS Code &amp; Cursor</text>
+
+  <!-- Row 3 -->
+  <!-- Mistral -->
+  <rect x="280" y="525" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="552" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">Mistral AI (Europe)</text>
+  <rect x="470" y="538" width="75" height="18" rx="5" fill="#64748b" fill-opacity="0.2" />
+  <text x="507" y="551" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">71 мс • Норма</text>
+  <text x="300" y="575" fill="#38bdf8" font-size="10" class="font-mono">api.mistral.ai</text>
+  <text x="300" y="595" fill="#94a3b8" font-size="10" class="font-sans">Codestral &amp; Mistral Large • 401 OK</text>
+  <text x="300" y="615" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Европейские сервера</text>
+
+  <!-- OpenAI -->
+  <rect x="580" y="525" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="600" y="552" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">OpenAI ChatGPT &amp; Codex</text>
+  <rect x="770" y="538" width="75" height="18" rx="5" fill="#64748b" fill-opacity="0.2" />
+  <text x="807" y="551" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">78 мс • Норма</text>
+  <text x="600" y="575" fill="#38bdf8" font-size="10" class="font-mono">api.openai.com</text>
+  <text x="600" y="595" fill="#94a3b8" font-size="10" class="font-sans">GPT-4o / o1 API • 401 Auth OK</text>
+  <text x="600" y="615" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Сетевых блокировок нет</text>
+
+  <!-- Claude -->
+  <rect x="880" y="525" width="280" height="110" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="900" y="552" fill="#ffffff" font-size="13" font-weight="bold" class="font-sans">Anthropic Claude</text>
+  <rect x="1070" y="538" width="75" height="18" rx="5" fill="#64748b" fill-opacity="0.2" />
+  <text x="1107" y="551" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">84 мс • Норма</text>
+  <text x="900" y="575" fill="#38bdf8" font-size="10" class="font-mono">api.anthropic.com</text>
+  <text x="900" y="595" fill="#94a3b8" font-size="10" class="font-sans">Claude 3.5 Sonnet • 401 Auth OK</text>
+  <text x="900" y="615" fill="#34d399" font-size="10" font-weight="bold" class="font-sans">✓ Сетевых блокировок нет</text>
+</svg>

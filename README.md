@@ -11,9 +11,59 @@
 
 *Автоматическое выявление и устранение сбоев подключения, региональных блокировок (`region-400`), конфликтов прокси и поломок `hosts` для Google Antigravity, Google Flow (Veo), Gemini, OpenAI, Claude и GitHub Copilot.*
 
-[**Скачать готовый установщик (.exe)**](#-установка-и-запуск) • [**Возможности**](#-ключевой-функционал) • [**Архитектура**](#-архитектура-решения) • [**Конфиденциальность**](#-гарантии-конфиденциальности) • [**Сборка из исходников**](#-сборка-из-исходников)
+[**Скачать Setup (.exe)**](#-быстрая-загрузка-direct-downloads) • [**Скриншоты**](#-скриншоты-интерфейса) • [**Возможности**](#-ключевой-функционал) • [**Конфиденциальность**](#-гарантии-конфиденциальности) • [**Сборка**](#-сборка-из-исходников)
 
 </div>
+
+---
+
+### 📥 Быстрая загрузка (Direct Downloads):
+
+| Релиз | Формат | Описание | Скачать |
+| :--- | :--- | :--- | :--- |
+| **v1.0.0** | 📦 **Windows Installer (.exe)** | Стандартный мастер установки с ярлыками на рабочем столе и меню «Пуск» | [**Скачать Setup.exe**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-Setup-v1.0.0.exe) |
+| **v1.0.0** | ⚡ **Portable (.exe)** | Портативный запуск без установки из любой папки | [**Скачать Portable.exe**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/ai-access-doctor.exe) |
+| **v1.0.0** | 🗜️ **ZIP Архив для тестеров** | Полный пакет: Setup + Portable + инструкция тестерам | [**Скачать Testers.zip**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-v1.0.0-Testers.zip) |
+
+> 🛡️ *100% Local-First: приложение полностью безопасно, автономно и не собирает никаких персональных данных.*
+
+---
+
+## 📸 Скриншоты интерфейса
+
+<details open>
+<summary><b>1. Главный Дашборд (Обнаружение конфликта прокси и экспресс-доступ)</b></summary>
+<br/>
+
+![Главный Дашборд](assets/screenshots/01_dashboard.svg)
+</details>
+
+<br/>
+
+<details open>
+<summary><b>2. Antigravity Doctor (Обход блокировок РФ/СНГ, NRPT и IPv4 приоритет)</b></summary>
+<br/>
+
+![Antigravity Doctor](assets/screenshots/02_antigravity_doctor.svg)
+</details>
+
+<br/>
+
+<details open>
+<summary><b>3. Спидтест ИИ (Интерактивная матрица отклика Groq, Gemini, PA, OpenAI, Claude)</b></summary>
+<br/>
+
+![Спидтест ИИ](assets/screenshots/03_speed_benchmark.svg)
+</details>
+
+<br/>
+
+<details open>
+<summary><b>4. Hosts File Doctor и Синхронизация CLI Прокси (Git & npm)</b></summary>
+<br/>
+
+![Hosts Doctor и CLI Sync](assets/screenshots/04_hosts_and_cli.svg)
+</details>
 
 ---
 

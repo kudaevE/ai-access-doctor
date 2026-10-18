@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+    <linearGradient id="emeraldGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#064e3b" stop-opacity="0.05" />
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .font-mono { font-family: 'Cascadia Code', 'Fira Code', Consolas, Monaco, monospace; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="780" fill="url(#bg)" />
+
+  <!-- App Window Container -->
+  <rect x="20" y="20" width="1160" height="740" rx="16" fill="#030712" stroke="#1f2937" stroke-width="1.5" />
+
+  <!-- Window Header Bar -->
+  <rect x="20" y="20" width="1160" height="48" rx="16" fill="#0f172a" />
+  <rect x="20" y="52" width="1160" height="16" fill="#0f172a" />
+  <line x1="20" y1="68" x2="1180" y2="68" stroke="#1f2937" stroke-width="1" />
+  <circle cx="44" cy="44" r="6" fill="#ef4444" />
+  <circle cx="64" cy="44" r="6" fill="#f59e0b" />
+  <circle cx="84" cy="44" r="6" fill="#10b981" />
+  <text x="580" y="49" fill="#94a3b8" font-size="12" font-weight="600" text-anchor="middle" class="font-sans">
+    AI Access Doctor — Сеть, Hosts Doctor и синхронизация CLI Прокси
+  </text>
+
+  <!-- SIDEBAR (Left 240px) -->
+  <rect x="20" y="68" width="240" height="692" fill="#0b0f19" />
+  <line x1="260" y1="68" x2="260" y2="760" stroke="#1f2937" stroke-width="1" />
+  <text x="40" y="112" fill="#ffffff" font-size="14" font-weight="bold" class="font-sans">AI Access Doctor</text>
+  <text x="40" y="126" fill="#38bdf8" font-size="10" font-weight="600" class="font-sans">v1.0.0 • Windows x64</text>
+
+  <text x="68" y="170" fill="#94a3b8" font-size="12" class="font-sans">Дашборд</text>
+  <text x="68" y="210" fill="#94a3b8" font-size="12" class="font-sans">Antigravity Doctor</text>
+  <text x="68" y="250" fill="#94a3b8" font-size="12" class="font-sans">Google Flow Studio</text>
+  <text x="68" y="290" fill="#94a3b8" font-size="12" class="font-sans">Спидтест ИИ</text>
+
+  <!-- Active Tab: Сеть и Прокси -->
+  <rect x="32" y="306" width="216" height="38" rx="10" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-opacity="0.3" />
+  <circle cx="52" cy="325" r="4" fill="#34d399" />
+  <text x="68" y="330" fill="#34d399" font-size="12" font-weight="600" class="font-sans">Сеть и Прокси</text>
+
+  <text x="68" y="370" fill="#94a3b8" font-size="12" class="font-sans">Детектив ошибок</text>
+
+  <!-- MAIN VIEWPORT -->
+  <!-- Header -->
+  <rect x="280" y="84" width="880" height="54" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="116" fill="#ffffff" font-size="15" font-weight="bold" class="font-sans">Сетевые адаптеры, аудит Hosts и синхронизация консоли</text>
+
+  <!-- SECTION 1: 1-CLICK CLI PROXY SYNC -->
+  <rect x="280" y="150" width="880" height="175" rx="14" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <circle cx="310" cy="180" r="16" fill="#0284c7" fill-opacity="0.2" />
+  <text x="310" y="186" fill="#38bdf8" font-size="16" text-anchor="middle">🔄</text>
+  <text x="338" y="178" fill="#ffffff" font-size="14" font-weight="bold" class="font-sans">
+    Синхронизация прокси терминала и инструментов разработки (CLI Sync)
+  </text>
+  <text x="338" y="196" fill="#94a3b8" font-size="11" class="font-sans">
+    Связывает настройки между Git (git config --global http.proxy), npm config и переменными среды Windows.
+  </text>
+
+  <!-- Status Grid -->
+  <rect x="300" y="215" width="260" height="45" rx="8" fill="#0b0f19" stroke="#1f2937" stroke-width="1" />
+  <text x="315" y="233" fill="#64748b" font-size="10" class="font-sans">GIT PROXY CONFIG</text>
+  <text x="315" y="250" fill="#34d399" font-size="11" font-weight="bold" class="font-mono">http://127.0.0.1:10809</text>
+
+  <rect x="580" y="215" width="260" height="45" rx="8" fill="#0b0f19" stroke="#1f2937" stroke-width="1" />
+  <text x="595" y="233" fill="#64748b" font-size="10" class="font-sans">NPM PROXY CONFIG</text>
+  <text x="595" y="250" fill="#34d399" font-size="11" font-weight="bold" class="font-mono">http://127.0.0.1:10809</text>
+
+  <rect x="860" y="215" width="280" height="45" rx="8" fill="#0b0f19" stroke="#1f2937" stroke-width="1" />
+  <text x="875" y="233" fill="#64748b" font-size="10" class="font-sans">ENV VARS (HTTP_PROXY / HTTPS_PROXY)</text>
+  <text x="875" y="250" fill="#34d399" font-size="11" font-weight="bold" class="font-mono">http://127.0.0.1:10809</text>
+
+  <!-- Action Buttons -->
+  <rect x="300" y="275" width="230" height="34" rx="8" fill="#0284c7" />
+  <text x="415" y="296" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">
+    ✓ Синхронизировать с CLI
+  </text>
+
+  <rect x="545" y="275" width="200" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="645" y="296" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">
+    ✕ Сбросить прокси консоли
+  </text>
+
+  <!-- SECTION 2: HOSTS FILE DOCTOR -->
+  <rect x="280" y="340" width="880" height="220" rx="14" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <circle cx="310" cy="370" r="16" fill="#10b981" fill-opacity="0.2" />
+  <text x="310" y="376" fill="#34d399" font-size="16" text-anchor="middle">🩺</text>
+  <text x="338" y="368" fill="#ffffff" font-size="14" font-weight="bold" class="font-sans">
+    Hosts File Doctor (Аудит и безопасная очистка C:\Windows\...\hosts)
+  </text>
+  <text x="338" y="386" fill="#94a3b8" font-size="11" class="font-sans">
+    Поиск устаревших записей cloudcode-pa, flow.google.com, accounts.google.com и api.openai.com.
+  </text>
+
+  <!-- Hosts Status Alert Banner -->
+  <rect x="300" y="405" width="840" height="56" rx="10" fill="#064e3b" fill-opacity="0.2" stroke="#10b981" stroke-opacity="0.4" stroke-width="1" />
+  <circle cx="325" cy="433" r="10" fill="#10b981" fill-opacity="0.3" />
+  <text x="325" y="437" fill="#34d399" font-size="11" text-anchor="middle">✓</text>
+  <text x="348" y="428" fill="#a7f3d0" font-size="11" font-weight="bold" class="font-sans">
+    Файл hosts чист и безопасен
+  </text>
+  <text x="348" y="446" fill="#cbd5e1" font-size="10" class="font-sans">
+    Всего строк: 24 • Обнаружено ИИ-доменов: 0 • Зависших записей: 0 • Резервная копия hosts.bak создана.
+  </text>
+
+  <!-- Hosts Actions -->
+  <rect x="300" y="475" width="180" height="34" rx="8" fill="#10b981" />
+  <text x="390" y="496" fill="#030712" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">
+    🧹 Очистить ИИ-записи
+  </text>
+
+  <rect x="495" y="475" width="160" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="575" y="496" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">
+    📁 Открыть папку etc
+  </text>
+
+  <!-- Info Text -->
+  <text x="300" y="535" fill="#64748b" font-size="10" class="font-sans">
+    * Любое действие автоматически создает резервную копию hosts.bak.&lt;timestamp&gt;, гарантируя безопасность системы.
+  </text>
+
+  <!-- SECTION 3: SYSTEM ADAPTERS PREVIEW -->
+  <rect x="280" y="575" width="880" height="145" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="602" fill="#ffffff" font-size="12" font-weight="bold" class="font-sans">
+    Аудит системных адаптеров Windows (WinINet / WinHTTP / Wintun)
+  </text>
+  <line x1="280" y1="614" x2="1160" y2="614" stroke="#1f2937" stroke-width="1" />
+
+  <text x="300" y="635" fill="#94a3b8" font-size="11" class="font-sans">● WinINet User Proxy: <tspan fill="#34d399" font-weight="bold">http://127.0.0.1:10809 (Штатно)</tspan></text>
+  <text x="300" y="655" fill="#94a3b8" font-size="11" class="font-sans">● WinHTTP System: <tspan fill="#38bdf8">Прямое подключение (Direct Access)</tspan></text>
+  <text x="300" y="675" fill="#94a3b8" font-size="11" class="font-sans">● Виртуальный адаптер: <tspan fill="#34d399">v2ray-tun (Wintun Tunnel, 172.19.0.1)</tspan></text>
+  <text x="300" y="695" fill="#94a3b8" font-size="11" class="font-sans">● Шлюз Ethernet: <tspan fill="#ffffff">192.168.1.1 (18мс)</tspan> • DNS: 1.1.1.1, 8.8.8.8</text>
+</svg>

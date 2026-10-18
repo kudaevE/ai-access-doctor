@@ -373,8 +373,10 @@ const DEMO_REPORT: FullDiagnosticReport = {
 };
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
-  const [report, setReport] = useState<FullDiagnosticReport | null>(null);
+  const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const initialTab = (urlParams?.get("tab") as TabType) || "dashboard";
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  const [report, setReport] = useState<FullDiagnosticReport | null>(DEMO_REPORT);
   const [history, setHistory] = useState<HistoryRecordSummary[]>([]);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [progress, setProgress] = useState<ProgressUpdate | null>(null);

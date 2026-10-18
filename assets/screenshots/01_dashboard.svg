@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+    <linearGradient id="roseGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e11d48" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#881337" stop-opacity="0.05" />
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0.95" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .font-mono { font-family: 'Cascadia Code', 'Fira Code', Consolas, Monaco, monospace; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="780" fill="url(#bg)" />
+
+  <!-- App Window Container -->
+  <rect x="20" y="20" width="1160" height="740" rx="16" fill="#030712" stroke="#1f2937" stroke-width="1.5" filter="url(#shadow)" />
+
+  <!-- Window Header Bar -->
+  <rect x="20" y="20" width="1160" height="48" rx="16" fill="#0f172a" />
+  <rect x="20" y="52" width="1160" height="16" fill="#0f172a" />
+  <line x1="20" y1="68" x2="1180" y2="68" stroke="#1f2937" stroke-width="1" />
+
+  <!-- Window Controls -->
+  <circle cx="44" cy="44" r="6" fill="#ef4444" />
+  <circle cx="64" cy="44" r="6" fill="#f59e0b" />
+  <circle cx="84" cy="44" r="6" fill="#10b981" />
+
+  <text x="580" y="49" fill="#94a3b8" font-size="12" font-weight="600" text-anchor="middle" class="font-sans">
+    AI Access Doctor — Windows Diagnostic &amp; AI Unlock Suite v1.0.0
+  </text>
+
+  <!-- SIDEBAR (Left 240px) -->
+  <rect x="20" y="68" width="240" height="692" fill="#0b0f19" />
+  <line x1="260" y1="68" x2="260" y2="760" stroke="#1f2937" stroke-width="1" />
+
+  <!-- App Logo in Sidebar -->
+  <rect x="40" y="88" width="36" height="36" rx="8" fill="url(#accent)" />
+  <path d="M50 106 L58 96 L62 108 L68 102" stroke="#030712" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <text x="86" y="104" fill="#ffffff" font-size="14" font-weight="bold" class="font-sans">AI Access Doctor</text>
+  <text x="86" y="118" fill="#38bdf8" font-size="10" font-weight="600" class="font-sans">v1.0.0 • Windows x64</text>
+
+  <!-- Nav Items -->
+  <!-- Active Tab: Dashboard -->
+  <rect x="32" y="146" width="216" height="38" rx="10" fill="#38bdf8" fill-opacity="0.15" stroke="#38bdf8" stroke-opacity="0.3" />
+  <circle cx="52" cy="165" r="4" fill="#38bdf8" />
+  <text x="68" y="170" fill="#38bdf8" font-size="12" font-weight="600" class="font-sans">Дашборд</text>
+
+  <!-- Tab 2: Antigravity Doctor -->
+  <text x="68" y="210" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Antigravity Doctor</text>
+  <rect x="180" y="198" width="56" height="18" rx="5" fill="#0284c7" fill-opacity="0.2" />
+  <text x="208" y="211" fill="#38bdf8" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">AG РФ</text>
+
+  <!-- Tab 3: Google Flow Studio -->
+  <text x="68" y="250" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Google Flow Studio</text>
+  <rect x="180" y="238" width="56" height="18" rx="5" fill="#8b5cf6" fill-opacity="0.2" />
+  <text x="208" y="251" fill="#c084fc" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">Veo ИИ</text>
+
+  <!-- Tab 4: Спидтест ИИ -->
+  <text x="68" y="290" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Спидтест ИИ</text>
+  <rect x="180" y="278" width="56" height="18" rx="5" fill="#f59e0b" fill-opacity="0.2" />
+  <text x="208" y="291" fill="#fbbf24" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">Ping</text>
+
+  <!-- Tab 5: Сеть и Прокси -->
+  <text x="68" y="330" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Сеть и Прокси</text>
+  <rect x="180" y="318" width="56" height="18" rx="5" fill="#10b981" fill-opacity="0.2" />
+  <text x="208" y="331" fill="#34d399" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">Hosts</text>
+
+  <!-- Tab 6: Детектив ошибок -->
+  <text x="68" y="370" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Детектив ошибок</text>
+  <text x="68" y="410" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">ИИ-сервисы</text>
+  <text x="68" y="450" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">IDE &amp; MCP Doctor</text>
+  <text x="68" y="490" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Отчеты и История</text>
+  <text x="68" y="530" fill="#94a3b8" font-size="12" font-weight="500" class="font-sans">Настройки</text>
+
+  <!-- MAIN VIEWPORT (Right 920px) -->
+  <!-- Top Bar -->
+  <rect x="280" y="84" width="880" height="54" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="116" fill="#f8fafc" font-size="14" font-weight="bold" class="font-sans">Главная панель состояния сети</text>
+  
+  <!-- Flush DNS Button -->
+  <rect x="830" y="96" width="140" height="30" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="900" y="115" fill="#cbd5e1" font-size="11" font-weight="600" text-anchor="middle" class="font-sans">🧹 Сброс DNS</text>
+
+  <!-- Run Diagnostics Button -->
+  <rect x="980" y="96" width="160" height="30" rx="8" fill="#0284c7" />
+  <text x="1060" y="115" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">▶ Запустить проверку</text>
+
+  <!-- 4 FAST-ACCESS ACTION CARDS -->
+  <!-- Card 1: Antigravity РФ -->
+  <rect x="280" y="154" width="205" height="88" rx="12" fill="#0c4a6e" fill-opacity="0.2" stroke="#0284c7" stroke-opacity="0.4" stroke-width="1" />
+  <circle cx="304" cy="180" r="14" fill="#0284c7" fill-opacity="0.3" />
+  <text x="304" y="185" fill="#38bdf8" font-size="14" text-anchor="middle" class="font-sans">⚡</text>
+  <text x="328" y="178" fill="#ffffff" font-size="12" font-weight="bold" class="font-sans">Antigravity РФ</text>
+  <rect x="425" y="168" width="46" height="16" rx="4" fill="#0284c7" fill-opacity="0.3" />
+  <text x="448" y="179" fill="#38bdf8" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">NRPT</text>
+  <text x="296" y="210" fill="#94a3b8" font-size="10" class="font-sans">Обход region-400 и IPv6 фризов</text>
+  <text x="455" y="230" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="end" class="font-sans">Открыть →</text>
+
+  <!-- Card 2: Google Flow Studio -->
+  <rect x="495" y="154" width="205" height="88" rx="12" fill="#581c87" fill-opacity="0.2" stroke="#8b5cf6" stroke-opacity="0.4" stroke-width="1" />
+  <circle cx="519" cy="180" r="14" fill="#8b5cf6" fill-opacity="0.3" />
+  <text x="519" y="185" fill="#c084fc" font-size="14" text-anchor="middle" class="font-sans">🎬</text>
+  <text x="543" y="178" fill="#ffffff" font-size="12" font-weight="bold" class="font-sans">Google Flow</text>
+  <rect x="635" y="168" width="50" height="16" rx="4" fill="#8b5cf6" fill-opacity="0.3" />
+  <text x="660" y="179" fill="#c084fc" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">Veo ИИ</text>
+  <text x="511" y="210" fill="#94a3b8" font-size="10" class="font-sans">Разблокировка видеогенератора</text>
+  <text x="670" y="230" fill="#c084fc" font-size="10" font-weight="bold" text-anchor="end" class="font-sans">Открыть →</text>
+
+  <!-- Card 3: Спидтест ИИ -->
+  <rect x="710" y="154" width="205" height="88" rx="12" fill="#78350f" fill-opacity="0.2" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1" />
+  <circle cx="734" cy="180" r="14" fill="#f59e0b" fill-opacity="0.3" />
+  <text x="734" y="185" fill="#fbbf24" font-size="14" text-anchor="middle" class="font-sans">⏱️</text>
+  <text x="758" y="178" fill="#ffffff" font-size="12" font-weight="bold" class="font-sans">Спидтест ИИ</text>
+  <rect x="850" y="168" width="50" height="16" rx="4" fill="#f59e0b" fill-opacity="0.3" />
+  <text x="875" y="179" fill="#fbbf24" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">Ping RTT</text>
+  <text x="726" y="210" fill="#94a3b8" font-size="10" class="font-sans">Замер Groq, Gemini, OpenAI, Claude</text>
+  <text x="885" y="230" fill="#fbbf24" font-size="10" font-weight="bold" text-anchor="end" class="font-sans">Тест →</text>
+
+  <!-- Card 4: Hosts & CLI Sync -->
+  <rect x="925" y="154" width="215" height="88" rx="12" fill="#064e3b" fill-opacity="0.2" stroke="#10b981" stroke-opacity="0.4" stroke-width="1" />
+  <circle cx="949" cy="180" r="14" fill="#10b981" fill-opacity="0.3" />
+  <text x="949" y="185" fill="#34d399" font-size="14" text-anchor="middle" class="font-sans">🩺</text>
+  <text x="973" y="178" fill="#ffffff" font-size="12" font-weight="bold" class="font-sans">Hosts &amp; CLI Sync</text>
+  <rect x="1080" y="168" width="45" height="16" rx="4" fill="#10b981" fill-opacity="0.3" />
+  <text x="1102" y="179" fill="#34d399" font-size="9" font-weight="bold" text-anchor="middle" class="font-sans">Fix</text>
+  <text x="941" y="210" fill="#94a3b8" font-size="10" class="font-sans">Очистка hosts и синхронизация Git</text>
+  <text x="1110" y="230" fill="#34d399" font-size="10" font-weight="bold" text-anchor="end" class="font-sans">Сброс →</text>
+
+  <!-- VERDICT BANNER (CRITICAL / PROXY CONFLICT) -->
+  <rect x="280" y="258" width="860" height="160" rx="14" fill="url(#roseGlow)" stroke="#f43f5e" stroke-opacity="0.5" stroke-width="1.5" />
+  <rect x="300" y="278" width="40" height="40" rx="10" fill="#e11d48" fill-opacity="0.2" />
+  <text x="320" y="303" fill="#fb7185" font-size="20" text-anchor="middle">⚠️</text>
+  <text x="352" y="295" fill="#fecdd3" font-size="14" font-weight="bold" class="font-sans">
+    Конфликт системного прокси Windows и переменных окружения
+  </text>
+  <rect x="980" y="278" width="140" height="24" rx="6" fill="#be123c" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1" />
+  <text x="1050" y="294" fill="#fecdd3" font-size="10" font-weight="bold" text-anchor="middle" class="font-sans">ТОЧНОСТЬ: 96%</text>
+
+  <text x="352" y="322" fill="#cbd5e1" font-size="11" class="font-sans">
+    Обнаружено: в реестре Windows (WinINet) активен порт 127.0.0.1:10809 (работает штатно), но в переменных
+  </text>
+  <text x="352" y="338" fill="#cbd5e1" font-size="11" class="font-sans">
+    окружения HTTP_PROXY указан 127.0.0.1:53200, который возвращает ошибку 502 Bad Gateway.
+  </text>
+  <text x="352" y="358" fill="#fda4af" font-size="11" font-weight="bold" class="font-sans">
+    Рекомендация: нажмите «Безопасное исправление», чтобы синхронизировать порты терминала и реестра.
+  </text>
+
+  <!-- Safe Fix Modal Button -->
+  <rect x="352" y="374" width="220" height="32" rx="8" fill="#e11d48" />
+  <text x="462" y="394" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle" class="font-sans">
+    🔧 Безопасное исправление (Safe Fix)
+  </text>
+
+  <!-- 3 METRIC TILES AT BOTTOM -->
+  <!-- Tile 1 -->
+  <rect x="280" y="434" width="275" height="140" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="300" y="460" fill="#94a3b8" font-size="11" font-weight="600" class="font-sans">СЕТЕВЫЕ АДАПТЕРЫ</text>
+  <text x="300" y="488" fill="#ffffff" font-size="16" font-weight="bold" class="font-sans">Dual-Stack IPv4 / Wintun</text>
+  <text x="300" y="512" fill="#34d399" font-size="11" class="font-sans">● Физический шлюз: 192.168.1.1 (18ms)</text>
+  <text x="300" y="530" fill="#38bdf8" font-size="11" class="font-sans">● Wintun VPN Adapter активен (172.19.0.1)</text>
+  <text x="300" y="548" fill="#94a3b8" font-size="11" class="font-sans">● IPv6-blackhole: приоритет IPv4 включен</text>
+
+  <!-- Tile 2 -->
+  <rect x="570" y="434" width="275" height="140" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="590" y="460" fill="#94a3b8" font-size="11" font-weight="600" class="font-sans">DNS И БЛОКИРОВКИ</text>
+  <text x="590" y="488" fill="#ffffff" font-size="16" font-weight="bold" class="font-sans">DoH / NRPT Чистый</text>
+  <text x="590" y="512" fill="#34d399" font-size="11" class="font-sans">● Cloudflare 1.1.1.1: 14мс (Чистый)</text>
+  <text x="590" y="530" fill="#34d399" font-size="11" class="font-sans">● Google DNS 8.8.8.8: 18мс (Чистый)</text>
+  <text x="590" y="548" fill="#38bdf8" font-size="11" class="font-sans">● Защита NRPT: активна для *.googleapis.com</text>
+
+  <!-- Tile 3 -->
+  <rect x="860" y="434" width="280" height="140" rx="12" fill="url(#cardBg)" stroke="#1f2937" stroke-width="1" />
+  <text x="880" y="460" fill="#94a3b8" font-size="11" font-weight="600" class="font-sans">ДОСТУПНОСТЬ ИИ-СЕРВИСОВ</text>
+  <text x="880" y="488" fill="#ffffff" font-size="16" font-weight="bold" class="font-sans">5 / 5 Протестировано</text>
+  <text x="880" y="512" fill="#34d399" font-size="11" class="font-sans">● Google Antigravity &amp; PA: 48мс</text>
+  <text x="880" y="530" fill="#34d399" font-size="11" class="font-sans">● Google Gemini API: 55мс</text>
+  <text x="880" y="548" fill="#38bdf8" font-size="11" class="font-sans">● OpenAI / Claude / GitHub: Доступны</text>
+
+  <!-- SYSTEM TRAY HINT FOOTER -->
+  <rect x="280" y="590" width="860" height="42" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1" />
+  <text x="300" y="616" fill="#94a3b8" font-size="11" class="font-sans">
+    💡 <tspan fill="#ffffff" font-weight="bold">Системный трей Windows активен:</tspan> сворачивайте программу в фон и очищайте кэш DNS кликом правой кнопки мыши по значку в трее.
+  </text>
+</svg>
