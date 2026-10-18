@@ -147,33 +147,56 @@ impl DiagnosticStorage {
     }
 }
 
-/// Redact personal usernames and sensitive substrings from report text
+/// Redact personal usernames, computer names, and sensitive keys/tokens from report text
 pub fn sanitize_text(input: &str) -> String {
     let mut sanitized = input.to_string();
+
+    // Redact full UserProfile path if available
+    if let Ok(profile) = std::env::var("USERPROFILE") {
+        if !profile.is_empty() {
+            sanitized = sanitized.replace(&profile, "%USERPROFILE%");
+        }
+    }
 
     // Redact current username if available
     if let Ok(user) = std::env::var("USERNAME") {
         if !user.is_empty() {
-            sanitized = sanitized.replace(&user, "[REDACTED_USER]");
+            sanitized = sanitized.replace(&user, "[USER]");
         }
     }
 
-    // Redact Bearer tokens if present in error messages
+    // Redact computer name if available
+    if let Ok(comp) = std::env::var("COMPUTERNAME") {
+        if !comp.is_empty() {
+            sanitized = sanitized.replace(&comp, "[PC]");
+        }
+    }
+
+    // Redact Bearer tokens, API keys and secrets
     let words: Vec<&str> = sanitized.split_whitespace().collect();
     let mut output_words = Vec::new();
     let mut skip_next = false;
 
-    for (i, word) in words.iter().enumerate() {
+    for (i, &word) in words.iter().enumerate() {
         if skip_next {
             skip_next = false;
             continue;
         }
-        if word.eq_ignore_ascii_case("bearer") && i + 1 < words.len() {
-            output_words.push("Bearer");
+        let lower = word.to_lowercase();
+        if (lower == "bearer" || lower == "token" || lower.starts_with("authorization:")) && i + 1 < words.len() {
+            output_words.push(word);
             output_words.push("[REDACTED_SECRET]");
             skip_next = true;
-        } else if word.starts_with("sk-") || word.starts_with("ghp_") || word.starts_with("AIzaSy") {
+        } else if word.starts_with("sk-")
+            || word.starts_with("ghp_")
+            || word.starts_with("gho_")
+            || word.starts_with("github_pat_")
+            || word.starts_with("AIzaSy")
+            || (word.starts_with("ey") && word.len() > 30) // JWT header prefix 'ey...'
+        {
             output_words.push("[REDACTED_KEY]");
+        } else if lower.contains("api_key=") || lower.contains("apikey=") || lower.contains("secret=") {
+            output_words.push("[REDACTED_PARAM]");
         } else {
             output_words.push(word);
         }

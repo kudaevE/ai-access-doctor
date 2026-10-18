@@ -209,6 +209,41 @@ fn get_browser_exe() -> Option<(String, &'static str)> {
     None
 }
 
+pub fn get_extension_dir() -> std::path::PathBuf {
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(parent) = exe_path.parent() {
+            let local_dir = parent.join("flow_unlocker_extension");
+            if std::fs::create_dir_all(&local_dir).is_ok() {
+                return local_dir;
+            }
+        }
+    }
+    let base = std::env::var("LOCALAPPDATA")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|_| std::env::temp_dir());
+    let ext_dir = base.join("AI Access Doctor").join("flow_unlocker_extension");
+    let _ = std::fs::create_dir_all(&ext_dir);
+    ext_dir
+}
+
+pub fn get_user_js_path() -> std::path::PathBuf {
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(parent) = exe_path.parent() {
+            let local_file = parent.join("flow-unlocker.user.js");
+            if let Ok(f) = std::fs::OpenOptions::new().write(true).create(true).open(&local_file) {
+                drop(f);
+                return local_file;
+            }
+        }
+    }
+    let base = std::env::var("LOCALAPPDATA")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|_| std::env::temp_dir());
+    let dir = base.join("AI Access Doctor");
+    let _ = std::fs::create_dir_all(&dir);
+    dir.join("flow-unlocker.user.js")
+}
+
 pub fn get_flow_info(app: &AppHandle) -> FlowUnlockInfo {
     ensure_extension_files_exist();
     let is_window_open = app.get_webview_window("google-flow").is_some();
@@ -225,18 +260,20 @@ pub fn get_flow_info(app: &AppHandle) -> FlowUnlockInfo {
         .map(|(_, name)| name.to_string())
         .unwrap_or_else(|| "Основной браузер".to_string());
 
+    let ext_dir = get_extension_dir();
+
     FlowUnlockInfo {
         flow_url: "https://flow.google.com/".to_string(),
         script_code: FLOW_UNLOCKER_SCRIPT.trim().to_string(),
         bookmarklet,
         is_window_open,
-        extension_folder_path: r"C:\AI Access Doctor\flow_unlocker_extension".to_string(),
+        extension_folder_path: ext_dir.to_string_lossy().to_string(),
         default_browser_name: browser_name,
     }
 }
 
 pub fn ensure_extension_files_exist() {
-    let ext_dir = std::path::PathBuf::from(r"C:\AI Access Doctor\flow_unlocker_extension");
+    let ext_dir = get_extension_dir();
     let _ = std::fs::create_dir_all(&ext_dir);
     let manifest_path = ext_dir.join("manifest.json");
     if !manifest_path.exists() {
@@ -245,7 +282,7 @@ pub fn ensure_extension_files_exist() {
     let content_path = ext_dir.join("content.js");
     let _ = std::fs::write(&content_path, FLOW_UNLOCKER_SCRIPT.trim());
 
-    let user_js_path = std::path::PathBuf::from(r"C:\AI Access Doctor\flow-unlocker.user.js");
+    let user_js_path = get_user_js_path();
     if !user_js_path.exists() {
         let user_script = format!(
             "// ==UserScript==\n// @name Google Flow Unlocker\n// @match https://flow.google.com/*\n// @run-at document-start\n// @grant unsafeWindow\n// ==/UserScript==\n{}",
@@ -261,8 +298,8 @@ pub fn launch_browser_with_flow() -> Result<String, String> {
 
     ensure_extension_files_exist();
 
-    let ext_dir = r"C:\AI Access Doctor\flow_unlocker_extension";
-    let ext_arg = format!("--load-extension={}", ext_dir);
+    let ext_dir = get_extension_dir();
+    let ext_arg = format!("--load-extension={}", ext_dir.to_string_lossy());
 
     if let Some((exe_path, browser_name)) = get_browser_exe() {
         Command::new(&exe_path)
@@ -293,8 +330,10 @@ pub fn open_extension_folder() -> Result<String, String> {
 
     ensure_extension_files_exist();
 
+    let ext_dir = get_extension_dir();
+
     Command::new("explorer")
-        .arg(r"C:\AI Access Doctor\flow_unlocker_extension")
+        .arg(&ext_dir)
         .creation_flags(CREATE_NO_WINDOW)
         .spawn()
         .map_err(|e| format!("Не удалось открыть папку: {}", e))?;
