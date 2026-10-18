@@ -10,6 +10,15 @@ src-tauri/target/
 *.db-journal
 *.log
 
+# Built Binaries & Release Archives (publish via GitHub Releases instead)
+*.exe
+*.msi
+*.zip
+*.tar.gz
+flow_unlocker_extension/
+flow-unlocker.user.js
+scripts/capture_screenshot.ps1
+
 # OS & Editor
 .DS_Store
 Thumbs.db
