@@ -80,9 +80,9 @@
     Режим обхода активен. Запросы к Google Antigravity и CloudCode маршрутизируются через чистый NRPT.
   </text>
   <text x="362" y="238" fill="#a7f3d0" font-size="11" class="font-sans">
-    ● NRPT DNS: <tspan font-weight="bold">Активен</tspan> &nbsp;•&nbsp; 
-    Шлюз ag_dns: <tspan font-weight="bold">Работает</tspan> &nbsp;•&nbsp; 
-    IPv4 Приоритет: <tspan font-weight="bold">Включен (::ffff:0:0/96)</tspan> &nbsp;•&nbsp; 
+    ● NRPT DNS: <tspan font-weight="bold">Активен</tspan> &#160;•&#160; 
+    Шлюз ag_dns: <tspan font-weight="bold">Работает</tspan> &#160;•&#160; 
+    IPv4 Приоритет: <tspan font-weight="bold">Включен (::ffff:0:0/96)</tspan> &#160;•&#160; 
     cloudcode-pa: <tspan font-weight="bold">200 OK (48мс)</tspan>
   </text>
 

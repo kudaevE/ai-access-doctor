@@ -17,53 +17,89 @@
 
 ---
 
-### 📥 Быстрая загрузка (Direct Downloads):
+### 📥 Быстрая загрузка программы для Windows 10 / 11 (x64):
+
+<p align="center">
+  <a href="https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-Setup-v1.0.0.exe">
+    <img src="https://img.shields.io/badge/📦_Установщик_Windows-Setup.exe_(4.3_МБ)-0284c7?style=for-the-badge&logo=windows&logoColor=white" height="38" alt="Скачать Setup.exe"/>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/ai-access-doctor.exe">
+    <img src="https://img.shields.io/badge/⚡_Портативная_версия-Portable.exe_(16_МБ)-059669?style=for-the-badge&logo=powershell&logoColor=white" height="38" alt="Скачать Portable.exe"/>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-v1.0.0-Testers.zip">
+    <img src="https://img.shields.io/badge/🗜️_Архив_для_тестеров-Testers.zip_(10_МБ)-7c3aed?style=for-the-badge&logo=github&logoColor=white" height="38" alt="Скачать Testers.zip"/>
+  </a>
+</p>
 
 | Релиз | Формат | Описание | Скачать |
 | :--- | :--- | :--- | :--- |
-| **v1.0.0** | 📦 **Windows Installer (.exe)** | Стандартный мастер установки с ярлыками на рабочем столе и меню «Пуск» | [**Скачать Setup.exe**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-Setup-v1.0.0.exe) |
-| **v1.0.0** | ⚡ **Portable (.exe)** | Портативный запуск без установки из любой папки | [**Скачать Portable.exe**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/ai-access-doctor.exe) |
-| **v1.0.0** | 🗜️ **ZIP Архив для тестеров** | Полный пакет: Setup + Portable + инструкция тестерам | [**Скачать Testers.zip**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-v1.0.0-Testers.zip) |
+| **v1.0.0** | 📦 **Windows Installer (.exe)** | Стандартный мастер установки с ярлыками на рабочем столе и меню «Пуск» | [**`AI-Access-Doctor-Setup-v1.0.0.exe`**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-Setup-v1.0.0.exe) |
+| **v1.0.0** | ⚡ **Portable (.exe)** | Портативный запуск без установки из любой папки | [**`ai-access-doctor.exe`**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/ai-access-doctor.exe) |
+| **v1.0.0** | 🗜️ **ZIP Архив для тестеров** | Полный пакет: Setup + Portable + инструкция тестерам | [**`AI-Access-Doctor-v1.0.0-Testers.zip`**](https://github.com/kudaevE/ai-access-doctor/releases/download/v1.0.0/AI-Access-Doctor-v1.0.0-Testers.zip) |
 
-> 🛡️ *100% Local-First: приложение полностью безопасно, автономно и не собирает никаких персональных данных.*
+> 🛡️ *100% Local-First: приложение полностью автономно, не требует прав администратора для тестов и не собирает никаких персональных данных.*
 
 ---
 
 ## 📸 Скриншоты интерфейса
 
-<details open>
-<summary><b>1. Главный Дашборд (Обнаружение конфликта прокси и экспресс-доступ)</b></summary>
-<br/>
+> 💡 **Как смотреть в полном масштабе:** Нажмите на любое изображение или ссылку под ним — скриншот откроется в новой вкладке браузера в оригинальном разрешении **1200×780 (100% Full HD)** с возможностью масштабирования.
 
-![Главный Дашборд](assets/screenshots/01_dashboard.svg)
-</details>
+### 1. Главный Дашборд
+*Автоматическое выявление конфликта системного прокси Windows и переменных окружения, 4 быстрых инструмента и метрики интерфейсов.*
 
-<br/>
+<p align="center">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/01_dashboard.png" target="_blank">
+    <img src="assets/screenshots/01_dashboard.png" alt="Главный Дашборд AI Access Doctor" width="100%" />
+  </a>
+</p>
+<p align="right">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/01_dashboard.png" target="_blank">🔍 <b>Открыть скриншот в полном масштабе (1200×780) ↗</b></a>
+</p>
 
-<details open>
-<summary><b>2. Antigravity Doctor (Обход блокировок РФ/СНГ, NRPT и IPv4 приоритет)</b></summary>
-<br/>
+---
 
-![Antigravity Doctor](assets/screenshots/02_antigravity_doctor.svg)
-</details>
+### 2. Antigravity & Google AI Doctor (РФ / СНГ)
+*Обход ошибки region-400, безболезненный Windows NRPT без смены глобального DNS ПК, приоритет IPv4 над IPv6 и проверка связи с cloudcode-pa.*
 
-<br/>
+<p align="center">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/02_antigravity_doctor.png" target="_blank">
+    <img src="assets/screenshots/02_antigravity_doctor.png" alt="Antigravity Doctor" width="100%" />
+  </a>
+</p>
+<p align="right">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/02_antigravity_doctor.png" target="_blank">🔍 <b>Открыть скриншот в полном масштабе (1200×780) ↗</b></a>
+</p>
 
-<details open>
-<summary><b>3. Спидтест ИИ (Интерактивная матрица отклика Groq, Gemini, PA, OpenAI, Claude)</b></summary>
-<br/>
+---
 
-![Спидтест ИИ](assets/screenshots/03_speed_benchmark.svg)
-</details>
+### 3. Спидтест ИИ (Интерактивная матрица отклика)
+*Параллельный замер сетевой задержки (RTT / Handshake / TLS) к Groq LPU, Gemini, Google PA, OpenAI, Cerebras, Claude и GitHub Copilot.*
 
-<br/>
+<p align="center">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/03_speed_benchmark.png" target="_blank">
+    <img src="assets/screenshots/03_speed_benchmark.png" alt="Спидтест ИИ" width="100%" />
+  </a>
+</p>
+<p align="right">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/03_speed_benchmark.png" target="_blank">🔍 <b>Открыть скриншот в полном масштабе (1200×780) ↗</b></a>
+</p>
 
-<details open>
-<summary><b>4. Hosts File Doctor и Синхронизация CLI Прокси (Git & npm)</b></summary>
-<br/>
+---
 
-![Hosts Doctor и CLI Sync](assets/screenshots/04_hosts_and_cli.svg)
-</details>
+### 4. Hosts File Doctor и Синхронизация CLI Прокси
+*Поиск и очистка отравленных ИИ-записей в `hosts` с автоматическим сохранением `hosts.bak` + синхронизация прокси для Git (`git config`) и npm.*
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/04_hosts_and_cli.png" target="_blank">
+    <img src="assets/screenshots/04_hosts_and_cli.png" alt="Hosts Doctor и CLI Proxy Sync" width="100%" />
+  </a>
+</p>
+<p align="right">
+  <a href="https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/screenshots/04_hosts_and_cli.png" target="_blank">🔍 <b>Открыть скриншот в полном масштабе (1200×780) ↗</b></a>
+</p>
 
 ---
 

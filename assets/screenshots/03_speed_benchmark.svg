@@ -73,8 +73,8 @@
     Groq LPU Cloud — 28 мс (Ультра-быстрый инференс)
   </text>
   <text x="380" y="238" fill="#fde68a" font-size="11" class="font-sans">
-    ● Средний пинг: <tspan font-weight="bold">60 мс</tspan> &nbsp;•&nbsp; 
-    Успешных эндпоинтов: <tspan font-weight="bold">9 / 9 (100%)</tspan> &nbsp;•&nbsp; 
+    ● Средний пинг: <tspan font-weight="bold">60 мс</tspan> &#160;•&#160; 
+    Успешных эндпоинтов: <tspan font-weight="bold">9 / 9 (100%)</tspan> &#160;•&#160; 
     Транспорт: <tspan font-weight="bold">HTTP/2 + TLS 1.3</tspan>
   </text>
 
