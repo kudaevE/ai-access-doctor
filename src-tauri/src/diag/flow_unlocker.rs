@@ -210,6 +210,7 @@ fn get_browser_exe() -> Option<(String, &'static str)> {
 }
 
 pub fn get_flow_info(app: &AppHandle) -> FlowUnlockInfo {
+    ensure_extension_files_exist();
     let is_window_open = app.get_webview_window("google-flow").is_some();
 
     let minified = FLOW_UNLOCKER_SCRIPT

@@ -370,6 +370,11 @@ pub mod commands {
     pub fn open_extensions_manager_in_browser() -> Result<String, String> {
         diag::flow_unlocker::open_extensions_manager_in_browser()
     }
+
+    #[tauri::command]
+    pub fn flush_dns_cache() -> Result<String, String> {
+        diag::dns::flush_dns_cache()
+    }
 }
 
 pub fn run() {
@@ -404,6 +409,7 @@ pub fn run() {
             commands::open_flow_in_external_browser,
             commands::open_extension_folder,
             commands::open_extensions_manager_in_browser,
+            commands::flush_dns_cache,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

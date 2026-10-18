@@ -449,3 +449,19 @@ pub async fn diagnose_dns_targets(hostnames: &[&str]) -> DnsDiagnostics {
         any_tampering,
     }
 }
+
+/// Flush the Windows DNS Client Resolver Cache (ipconfig /flushdns)
+pub fn flush_dns_cache() -> Result<String, String> {
+    let start = Instant::now();
+    let out = crate::diag::silent_command("ipconfig")
+        .arg("/flushdns")
+        .output()
+        .map_err(|e| format!("Не удалось вызвать ipconfig /flushdns: {}", e))?;
+
+    if out.status.success() {
+        let elapsed = start.elapsed().as_millis();
+        Ok(format!("Кэш DNS Windows успешно очищен ({} мс).", elapsed))
+    } else {
+        Err(format!("Ошибка при очистке DNS: {}", String::from_utf8_lossy(&out.stderr)))
+    }
+}

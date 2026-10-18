@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Play,
   RotateCw,
@@ -6,8 +6,10 @@ import {
   ShieldCheck,
   Wifi,
   Sparkles,
+  RotateCcw,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
+import { invoke } from "@tauri-apps/api/core";
 
 interface HeaderProps {
   report: FullDiagnosticReport | null;
@@ -26,6 +28,22 @@ export const Header: React.FC<HeaderProps> = ({
   isDemoMode,
   setIsDemoMode,
 }) => {
+  const [flushingDns, setFlushingDns] = useState<boolean>(false);
+  const [dnsFlushedMsg, setDnsFlushedMsg] = useState<string | null>(null);
+
+  const handleFlushDns = async () => {
+    setFlushingDns(true);
+    try {
+      const res = await invoke<string>("flush_dns_cache");
+      setDnsFlushedMsg("Кэш очищен!");
+      setTimeout(() => setDnsFlushedMsg(null), 3000);
+    } catch (e: any) {
+      setDnsFlushedMsg("Ошибка");
+      setTimeout(() => setDnsFlushedMsg(null), 3000);
+    } finally {
+      setFlushingDns(false);
+    }
+  };
   return (
     <header className="h-16 bg-surface/80 backdrop-blur-md border-b border-surface-border px-6 flex items-center justify-between z-10">
       {/* Network Snapshot Badges */}
@@ -71,6 +89,17 @@ export const Header: React.FC<HeaderProps> = ({
             {isDemoMode ? "Эмуляция сбоев" : "Реальный аудит"}
           </button>
         </div>
+
+        {/* Flush DNS Button */}
+        <button
+          onClick={handleFlushDns}
+          disabled={flushingDns}
+          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-surface-border bg-surface-elevated hover:bg-surface-border/80 text-xs font-medium text-slate-300 hover:text-white transition-all shadow-sm active:scale-95 disabled:opacity-50"
+          title="Очистить локальный кэш сопоставителя DNS Windows (ipconfig /flushdns)"
+        >
+          <RotateCcw className={`w-3.5 h-3.5 text-sky-400 ${flushingDns ? "animate-spin" : ""}`} />
+          <span>{dnsFlushedMsg || "Сброс DNS"}</span>
+        </button>
 
         {/* Export Button */}
         {report && (
