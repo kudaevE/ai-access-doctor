@@ -69,6 +69,18 @@ export const GoogleFlowView: React.FC = () => {
     }
   };
 
+  const handleOpenExternalBrowser = async () => {
+    try {
+      const res = await invoke<string>("open_flow_in_external_browser");
+      setStatusMessage({ text: res, isError: false });
+    } catch (err: any) {
+      setStatusMessage({
+        text: `Ошибка запуска браузера: ${err.toString()}`,
+        isError: true,
+      });
+    }
+  };
+
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
@@ -186,12 +198,27 @@ export const GoogleFlowView: React.FC = () => {
               <button
                 onClick={handleLaunchFlow}
                 disabled={launching}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:via-pink-500 hover:to-indigo-500 text-white font-bold text-base shadow-lg shadow-purple-500/25 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:via-pink-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-500/25 active:scale-95 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
               >
-                <MonitorPlay className={`w-5 h-5 ${launching ? "animate-spin" : ""}`} />
-                {launching ? "Открытие окна..." : "🚀 Открыть Google Flow Studio"}
+                <MonitorPlay className={`w-4 h-4 ${launching ? "animate-spin" : ""}`} />
+                {launching ? "Открытие окна..." : "🚀 Открыть в приложении"}
+              </button>
+
+              <button
+                onClick={handleOpenExternalBrowser}
+                className="px-5 py-3.5 rounded-xl bg-surface-elevated hover:bg-slate-700/60 border border-purple-500/30 hover:border-purple-500/60 text-purple-200 font-semibold text-sm shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                <Globe className="w-4 h-4 text-sky-400" />
+                🌐 Открыть в основном браузере
               </button>
             </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+            <span>
+              <strong>Важно:</strong> Google Flow требует авторизации в Google-аккаунте. Если в изолированном окне отображается белый экран, откройте Flow в вашем <strong>основном браузере</strong> (где вы уже залогинены в Google) и используйте <strong>1-Click Букмарклет (Закладку)</strong> ниже для моментальной разблокировки в Chrome/Edge!
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-purple-500/20 text-xs">

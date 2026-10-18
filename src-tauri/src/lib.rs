@@ -355,6 +355,11 @@ pub mod commands {
     pub fn open_google_flow(app: AppHandle) -> Result<String, String> {
         diag::flow_unlocker::launch_google_flow_window(&app)
     }
+
+    #[tauri::command]
+    pub fn open_flow_in_external_browser() -> Result<String, String> {
+        diag::flow_unlocker::open_flow_in_external_browser()
+    }
 }
 
 pub fn run() {
@@ -386,6 +391,7 @@ pub fn run() {
             commands::rollback_antigravity_unlock,
             commands::get_google_flow_info,
             commands::open_google_flow,
+            commands::open_flow_in_external_browser,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
