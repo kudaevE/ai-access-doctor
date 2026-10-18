@@ -394,4 +394,6 @@ export interface FlowUnlockInfo {
   script_code: string;
   bookmarklet: string;
   is_window_open: boolean;
+  extension_folder_path: string;
+  default_browser_name: string;
 }

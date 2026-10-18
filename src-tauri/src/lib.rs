@@ -358,7 +358,17 @@ pub mod commands {
 
     #[tauri::command]
     pub fn open_flow_in_external_browser() -> Result<String, String> {
-        diag::flow_unlocker::open_flow_in_external_browser()
+        diag::flow_unlocker::launch_browser_with_flow()
+    }
+
+    #[tauri::command]
+    pub fn open_extension_folder() -> Result<String, String> {
+        diag::flow_unlocker::open_extension_folder()
+    }
+
+    #[tauri::command]
+    pub fn open_extensions_manager_in_browser() -> Result<String, String> {
+        diag::flow_unlocker::open_extensions_manager_in_browser()
     }
 }
 
@@ -392,6 +402,8 @@ pub fn run() {
             commands::get_google_flow_info,
             commands::open_google_flow,
             commands::open_flow_in_external_browser,
+            commands::open_extension_folder,
+            commands::open_extensions_manager_in_browser,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

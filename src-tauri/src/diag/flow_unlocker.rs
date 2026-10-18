@@ -2,6 +2,23 @@ use serde::{Deserialize, Serialize};
 use std::process::Command;
 use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 
+pub const EXTENSION_MANIFEST: &str = r#"{
+  "manifest_version": 3,
+  "name": "Google Flow Unlocker (AI Access Doctor)",
+  "version": "1.0.0",
+  "description": "Автоматическая разблокировка Google Flow (Veo, Imagen 3) для Chrome и Edge",
+  "content_scripts": [
+    {
+      "matches": ["https://flow.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ]
+}
+"#;
+
 pub const FLOW_UNLOCKER_SCRIPT: &str = r#"
 (() => {
   'use strict';
@@ -55,7 +72,9 @@ pub const FLOW_UNLOCKER_SCRIPT: &str = r#"
       } catch {}
 
       let output = prefix, pos = start, changed = false;
-      while (pos < raw.length) {
+      let iterations = 0;
+      while (pos < raw.length && iterations < 50000) {
+        iterations++;
         const nl = raw.indexOf('\n', pos);
         if (nl < 0) { output += raw.slice(pos); break; }
         const sizeText = raw.slice(pos, nl), size = Number(sizeText);
@@ -162,6 +181,32 @@ pub struct FlowUnlockInfo {
     pub script_code: String,
     pub bookmarklet: String,
     pub is_window_open: bool,
+    pub extension_folder_path: String,
+    pub default_browser_name: String,
+}
+
+fn get_browser_exe() -> Option<(String, &'static str)> {
+    let chrome_paths = [
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+    ];
+    for p in &chrome_paths {
+        if std::path::Path::new(p).exists() {
+            return Some((p.to_string(), "Google Chrome"));
+        }
+    }
+
+    let edge_paths = [
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    ];
+    for p in &edge_paths {
+        if std::path::Path::new(p).exists() {
+            return Some((p.to_string(), "Microsoft Edge"));
+        }
+    }
+
+    None
 }
 
 pub fn get_flow_info(app: &AppHandle) -> FlowUnlockInfo {
@@ -175,12 +220,107 @@ pub fn get_flow_info(app: &AppHandle) -> FlowUnlockInfo {
         .join(" ");
 
     let bookmarklet = format!("javascript:{}", minified);
+    let browser_name = get_browser_exe()
+        .map(|(_, name)| name.to_string())
+        .unwrap_or_else(|| "Основной браузер".to_string());
 
     FlowUnlockInfo {
         flow_url: "https://flow.google.com/".to_string(),
         script_code: FLOW_UNLOCKER_SCRIPT.trim().to_string(),
         bookmarklet,
         is_window_open,
+        extension_folder_path: r"C:\AI Access Doctor\flow_unlocker_extension".to_string(),
+        default_browser_name: browser_name,
+    }
+}
+
+pub fn ensure_extension_files_exist() {
+    let ext_dir = std::path::PathBuf::from(r"C:\AI Access Doctor\flow_unlocker_extension");
+    let _ = std::fs::create_dir_all(&ext_dir);
+    let manifest_path = ext_dir.join("manifest.json");
+    if !manifest_path.exists() {
+        let _ = std::fs::write(&manifest_path, EXTENSION_MANIFEST);
+    }
+    let content_path = ext_dir.join("content.js");
+    let _ = std::fs::write(&content_path, FLOW_UNLOCKER_SCRIPT.trim());
+
+    let user_js_path = std::path::PathBuf::from(r"C:\AI Access Doctor\flow-unlocker.user.js");
+    if !user_js_path.exists() {
+        let user_script = format!(
+            "// ==UserScript==\n// @name Google Flow Unlocker\n// @match https://flow.google.com/*\n// @run-at document-start\n// @grant unsafeWindow\n// ==/UserScript==\n{}",
+            FLOW_UNLOCKER_SCRIPT.trim()
+        );
+        let _ = std::fs::write(&user_js_path, user_script);
+    }
+}
+
+pub fn launch_browser_with_flow() -> Result<String, String> {
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    use std::os::windows::process::CommandExt;
+
+    ensure_extension_files_exist();
+
+    let ext_dir = r"C:\AI Access Doctor\flow_unlocker_extension";
+    let ext_arg = format!("--load-extension={}", ext_dir);
+
+    if let Some((exe_path, browser_name)) = get_browser_exe() {
+        Command::new(&exe_path)
+            .arg(&ext_arg)
+            .arg("https://flow.google.com/")
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .map_err(|e| format!("Не удалось запустить {}: {}", browser_name, e))?;
+
+        Ok(format!(
+            "Google Flow открыт в {} с активированным модулем разблокировки!",
+            browser_name
+        ))
+    } else {
+        Command::new("cmd")
+            .args(["/C", "start", "", "https://flow.google.com/"])
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .map_err(|e| format!("Не удалось открыть браузер по умолчанию: {}", e))?;
+
+        Ok("Google Flow открыт в вашем браузере по умолчанию.".to_string())
+    }
+}
+
+pub fn open_extension_folder() -> Result<String, String> {
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    use std::os::windows::process::CommandExt;
+
+    ensure_extension_files_exist();
+
+    Command::new("explorer")
+        .arg(r"C:\AI Access Doctor\flow_unlocker_extension")
+        .creation_flags(CREATE_NO_WINDOW)
+        .spawn()
+        .map_err(|e| format!("Не удалось открыть папку: {}", e))?;
+
+    Ok("Папка с расширением открыта в Проводнике Windows.".to_string())
+}
+
+pub fn open_extensions_manager_in_browser() -> Result<String, String> {
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    use std::os::windows::process::CommandExt;
+
+    if let Some((exe_path, _)) = get_browser_exe() {
+        let manager_url = if exe_path.to_lowercase().contains("chrome") {
+            "chrome://extensions"
+        } else {
+            "edge://extensions"
+        };
+
+        Command::new(&exe_path)
+            .arg(manager_url)
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .map_err(|e| format!("Ошибка открытия менеджера расширений: {}", e))?;
+
+        Ok("В браузере открыта страница управления расширениями (включите 'Режим разработчика' и перетащите папку).".to_string())
+    } else {
+        Err("Браузер не найден".to_string())
     }
 }
 
@@ -211,17 +351,4 @@ pub fn launch_google_flow_window(app: &AppHandle) -> Result<String, String> {
     let _ = win.set_focus();
 
     Ok("Окно Google Flow успешно открыто со встроенным патчем региональной доступности!".to_string())
-}
-
-pub fn open_flow_in_external_browser() -> Result<String, String> {
-    const CREATE_NO_WINDOW: u32 = 0x08000000;
-    use std::os::windows::process::CommandExt;
-
-    Command::new("cmd")
-        .args(["/C", "start", "", "https://flow.google.com/"])
-        .creation_flags(CREATE_NO_WINDOW)
-        .spawn()
-        .map_err(|e| format!("Не удалось открыть браузер по умолчанию: {}", e))?;
-
-    Ok("Google Flow открыт в вашем основном браузере.".to_string())
 }

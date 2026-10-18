@@ -18,6 +18,7 @@ import {
   ExternalLink,
   Video,
   MonitorPlay,
+  Globe,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { AntigravityDoctorReport } from "../types";
@@ -38,11 +39,11 @@ export const AntigravityDoctorView: React.FC = () => {
     setFlowLaunching(true);
     setFeedbackMsg(null);
     try {
-      const res = await invoke<string>("open_google_flow");
+      const res = await invoke<string>("open_flow_in_external_browser");
       setFeedbackMsg({ text: res, isError: false });
     } catch (err: any) {
       setFeedbackMsg({
-        text: `Ошибка запуска Google Flow: ${err.toString()}`,
+        text: `Ошибка запуска Google Flow в браузере: ${err.toString()}`,
         isError: true,
       });
     } finally {
@@ -290,7 +291,7 @@ export const AntigravityDoctorView: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-300 mt-0.5">
-              Прямой доступ к flow.google.com с автоматической подменой RPC региональной доступности. Работает без расширения Tampermonkey.
+              Прямой запуск flow.google.com в вашем основном браузере (Chrome / Edge) со встроенным обходом региональных блокировок.
             </p>
           </div>
         </div>
@@ -300,8 +301,8 @@ export const AntigravityDoctorView: React.FC = () => {
           disabled={flowLaunching}
           className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-md shadow-purple-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
         >
-          <MonitorPlay className={`w-4 h-4 ${flowLaunching ? "animate-spin" : ""}`} />
-          {flowLaunching ? "Открытие окна..." : "🚀 Запустить Google Flow"}
+          <Globe className={`w-4 h-4 ${flowLaunching ? "animate-spin" : ""}`} />
+          {flowLaunching ? "Запуск браузера..." : "🚀 Запустить Google Flow в браузере"}
         </button>
       </div>
 

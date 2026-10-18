@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Google Flow Unlocker (AI Access Doctor)",
+  "version": "1.0.0",
+  "description": "Клиентский обход региональных ограничений Google Flow (Veo, Imagen 3)",
+  "content_scripts": [
+    {
+      "matches": ["https://flow.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ]
+}
