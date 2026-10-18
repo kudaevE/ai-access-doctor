@@ -1,0 +1,40 @@
+name: CI - Build & Validate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: x86_64-pc-windows-msvc
+
+    - name: Rust Cache
+      uses: swatinem/rust-cache@v2
+      with:
+        workspaces: src-tauri
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+
+    - name: TypeScript & Vite Build Check
+      run: npm run build
+
+    - name: Cargo Check
+      run: cargo check --manifest-path src-tauri/Cargo.toml

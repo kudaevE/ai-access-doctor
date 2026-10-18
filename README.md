@@ -1,17 +1,26 @@
 <div align="center">
 
+<a href="https://github.com/kudaevE/ai-access-doctor">
+  <img src="assets/social-preview.png" alt="AI Access Doctor — Windows Diagnostic & Connectivity Suite" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);" />
+</a>
+
 # 🩺 AI Access Doctor
 ### All-in-One Windows Diagnostic, Connectivity & Bypass Suite for AI Developer Tools
+**Универсальный диагностический комплекс и инструмент восстановления сетевого доступа к ИИ-сервисам для Windows 10 / 11**
 
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-blue?logo=windows)](https://github.com)
-[![Framework](https://img.shields.io/badge/Framework-Tauri%20v2%20%2B%20Rust-orange?logo=tauri)](https://tauri.app)
-[![UI](https://img.shields.io/badge/Frontend-React%2018%20%2B%20TypeScript%20%2B%20Tailwind-38bdf8?logo=react)](https://react.dev)
-[![Local First](https://img.shields.io/badge/Privacy-100%25%20Local--First%20(No%20Telemetry)-emerald?logo=shield)](https://github.com)
-[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0284c7?style=flat-square&logo=windows&logoColor=white)](https://github.com/kudaevE/ai-access-doctor)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-059669?style=flat-square&logo=github&logoColor=white)](https://github.com/kudaevE/ai-access-doctor/releases/latest)
+[![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/kudaevE/ai-access-doctor/actions)
+[![Framework](https://img.shields.io/badge/Framework-Tauri%20v2%20%2B%20Rust-ea580c?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app)
+[![UI](https://img.shields.io/badge/Frontend-React%2018%20%2B%20TS-38bdf8?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local--First%20(No%20Telemetry)-10b981?style=flat-square&logo=shield&logoColor=white)](https://github.com/kudaevE/ai-access-doctor)
+[![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=flat-square)](LICENSE)
 
-*Автоматическое выявление и устранение сбоев подключения, региональных блокировок (`region-400`), конфликтов прокси и поломок `hosts` для Google Antigravity, Google Flow (Veo), Gemini, OpenAI, Claude и GitHub Copilot.*
+*Автоматическое выявление и устранение сетевых сбоев, региональных блокировок (`region-400`), конфликтов портов прокси (502 Bad Gateway), зависаний IPv6 и поломок файла `hosts` для Google Antigravity, Google Flow (Veo), Gemini, Groq, Claude, OpenAI и GitHub Copilot.*
 
-[**Скачать Setup (.exe)**](#-быстрая-загрузка-direct-downloads) • [**Скриншоты**](#-скриншоты-интерфейса) • [**Возможности**](#-ключевой-функционал) • [**Конфиденциальность**](#-гарантии-конфиденциальности) • [**Сборка**](#-сборка-из-исходников)
+---
+
+[📥 **Быстрая загрузка**](#-быстрая-загрузка-программы-для-windows-10--11-x64) • [📸 **Скриншоты интерфейса**](#-скриншоты-интерфейса) • [🚀 **Ключевой функционал**](#-ключевой-функционал) • [❓ **Частые ошибки и FAQ**](#-частые-ошибки-и-решения-faq--troubleshooting) • [🔒 **Конфиденциальность**](#-гарантии-конфиденциальности) • [💻 **Установка**](#-установка-и-запуск) • [🌐 **English Guide**](#-english-overview--architecture)
 
 </div>
 
@@ -242,6 +251,97 @@ npx tauri build
 
 Готовый установщик будет создан в:
 `src-tauri\target\release\bundle\nsis\AI Access Doctor_1.0.0_x64-setup.exe`
+
+---
+
+---
+
+## ❓ Частые ошибки и решения (FAQ & Troubleshooting)
+
+<details open>
+<summary><b>1. Как исправить ошибку «region-400 / User location not supported» в Google Antigravity?</b></summary>
+<br/>
+
+**Причина:** При обращении к сервисам авторизации и Language Server (`cloudcode-pa.googleapis.com`) Google определяет региональную принадлежность IP через резолверы провайдера.  
+**Решение в AI Access Doctor:**
+1. Откройте вкладку **«Antigravity Doctor»**.
+2. Выберите рекомендуемый профиль **`1. ag_relay`** (или **`2. Чистый NRPT`**).
+3. Нажмите **«Активировать»**. Windows автоматически начнет маршрутизировать DNS-запросы для `*.googleapis.com` через чистые резолверы без смены DNS всего компьютера, а IPv4 приоритет предотвратит зависания IPv6.
+4. Перезапустите Antigravity — ошибка `region-400` полностью исчезнет.
+</details>
+
+<br/>
+
+<details open>
+<summary><b>2. Как разблокировать Google Flow (генерацию видео Veo и картинок Imagen 3) в РФ и СНГ?</b></summary>
+<br/>
+
+**Причина:** Веб-приложение `flow.google.com` отправляет региональные RPC-запросы (`cPZSdc`, `KV2T2d`, `fetchToolAvailability`), которые возвращают флаг недоступности инструмента для вашего региона.  
+**Решение в AI Access Doctor:**
+1. Перейдите во вкладку **«Google Flow Studio»**.
+2. Нажмите кнопку **«Сгенерировать расширение и запустить Chrome»** (или Edge).
+3. Приложение создаст изолированное расширение `flow_unlocker_extension` и откроет страницу с активированным генератором Veo. Дополнительно доступен скрипт для расширения Tampermonkey.
+</details>
+
+<br/>
+
+<details>
+<summary><b>3. Почему терминал (Git, npm, curl, PowerShell) выдает «502 Bad Gateway» или «Failed to connect to 127.0.0.1:10809»?</b></summary>
+<br/>
+
+**Причина:** При отключении или смене порта VPN-клиента (v2rayN, Clash, Nekoray) в системных переменных окружения `HTTP_PROXY` / `HTTPS_PROXY` или в конфигах `git config --global http.proxy` остаются старые зависшие порты.  
+**Решение в AI Access Doctor:**
+1. На главном Дашборде AI Access Doctor мгновенно подсветит блок: *«Конфликт системного прокси Windows и переменных окружения»*.
+2. Нажмите кнопку **«Безопасное исправление (Safe Fix)»** или перейдите в раздел **«Сеть и Прокси»** -> **«Синхронизировать с CLI»**.
+3. Настройки консоли, реестра и Git будут синхронизированы за миллисекунды.
+</details>
+
+<br/>
+
+<details>
+<summary><b>4. Зачем нужен Windows NRPT DNS и чем он лучше обычной смены DNS в сетевой карте?</b></summary>
+<br/>
+
+**Преимущество:** Смена глобального DNS на компьютере часто ломает локальные корпоративные домены, Active Directory, локальные роутеры и принтеры.  
+**Технология NRPT (Name Resolution Policy Table):** встроенный механизм Windows ядра, позволяющий направить **только запросы к определенным доменным маскам** (например, `*.googleapis.com`) на независимые защищенные резолверы (1.1.1.1 / 8.8.8.8), не затрагивая остальной трафик системы.
+</details>
+
+<br/>
+
+<details>
+<summary><b>5. Безопасна ли очистка системного файла hosts?</b></summary>
+<br/>
+
+**100% безопасность:** Перед любым изменением Hosts Doctor создает архивную копию `hosts.bak.<timestamp>` в папке `C:\Windows\System32\drivers\etc`. Удаляются исключительно отравленные записи доменов искусственного интеллекта (`cloudcode-pa`, `flow.google.com`, `api.openai.com`), ваши личные локальные записи (например, `127.0.0.1 localhost`, `mysite.local`) остаются неприкосновенными.
+</details>
+
+---
+
+## 🌍 English Overview & Architecture
+
+### What is AI Access Doctor?
+**AI Access Doctor** is a lightweight, local-first diagnostic and connectivity recovery desktop application engineered for developers working with cutting-edge AI tools (such as **Google Antigravity**, **Google Flow Veo**, **Gemini 1.5**, **Groq LPU**, **OpenAI**, and **Claude**) under restrictive network environments, ISP DNS tampering, or complex Windows proxy setups.
+
+### Core Capabilities:
+- **⚡ Google Antigravity & CloudCode PA Unlock:** Native Windows NRPT rule deployment for `*.googleapis.com`, loopback relay proxy, and IPv4 priority over IPv6 to resolve 30s timeouts and `region-400` errors.
+- **🎬 Google Flow (Veo & Imagen 3) Bypass:** Dynamic Chrome/Edge extension injector overriding regional blocking RPC calls (`fetchToolAvailability`, `availabilityState`).
+- **⏱️ Live AI Latency & Speed Matrix:** Concurrent RTT, DNS handshake, and TLS negotiation benchmark across Groq, Gemini, OpenAI, Claude, Cerebras, and OpenRouter.
+- **🩺 Windows Hosts File Doctor:** Automated scanning and non-destructive removal of legacy poisoned IP mappings with automatic timestamped backup (`hosts.bak`).
+- **🔄 CLI & WinINet Proxy Synchronizer:** Instant alignment between WinINet registry, Windows environment variables (`HTTP_PROXY`, `HTTPS_PROXY`), Git global config, and npm config.
+- **🛡️ 100% Local-First Security:** Zero telemetry, no external data harvesting, and automatic redaction of Windows usernames, machine hostnames, and API secrets.
+
+---
+
+## 🏷️ Теги и ключевые слова (SEO Keywords Index)
+
+| Категория | Ключевые поисковые запросы (Search Keywords) |
+| :--- | :--- |
+| **Google Antigravity** | `google antigravity`, `antigravity doctor`, `region-400 bypass`, `antigravity error 400`, `cloudcode-pa.googleapis.com`, `antigravity fix windows`, `обход блокировки antigravity`, `antigravity зависает авторизация`, `antigravity бесконечная загрузка` |
+| **Google Flow & Veo** | `google flow bypass`, `google veo access`, `veo video generator`, `flow.google.com country not supported`, `сервис недоступен в вашем регионе veo`, `flow unlocker extension`, `tampermonkey google flow` |
+| **Сетевые прокси и CLI** | `windows proxy conflict`, `502 bad gateway git`, `npm proxy error 10809`, `fix cli proxy windows`, `wininet proxy sync`, `git config http.proxy localhost`, `v2rayn proxy terminal sync` |
+| **DNS и NRPT** | `windows nrpt dns`, `name resolution policy table`, `dns leak fix`, `ipv6 blackhole bypass`, `hosts file doctor windows`, `очистка hosts`, `сброс кэша dns ipconfig flushdns` |
+| **Спидтест и задержка ИИ** | `ai latency benchmark`, `groq speed test`, `gemini response time`, `llm api ping test`, `openai api latency test`, `fastest ai inference rtt` |
+| **Стек и Архитектура** | `tauri v2`, `rust desktop app`, `react typescript tailwind`, `local first privacy software`, `windows 11 open source tools` |
 
 ---
 
