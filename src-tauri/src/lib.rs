@@ -345,32 +345,22 @@ pub mod commands {
     pub fn rollback_antigravity_unlock() -> Result<String, String> {
         diag::antigravity_unlock::rollback_antigravity_unlock()
     }
-}
 
-use std::io::Write;
+    #[tauri::command]
+    pub fn get_google_flow_info(app: AppHandle) -> Result<diag::flow_unlocker::FlowUnlockInfo, String> {
+        Ok(diag::flow_unlocker::get_flow_info(&app))
+    }
 
-fn log_step(msg: &str) {
-    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open("C:\\AI Access Doctor\\debug_step.log") {
-        let _ = writeln!(f, "[{}] {}", Utc::now(), msg);
+    #[tauri::command]
+    pub fn open_google_flow(app: AppHandle) -> Result<String, String> {
+        diag::flow_unlocker::launch_google_flow_window(&app)
     }
 }
 
 pub fn run() {
-    log_step("1. Start run");
-
-    let storage = DiagnosticStorage::new();
-    log_step("2. After DiagnosticStorage::new");
-
-    let builder = tauri::Builder::default();
-    log_step("3. After Builder::default");
-
-    let res = builder
+    tauri::Builder::default()
         .manage(AppState {
-            storage: Mutex::new(storage),
-        })
-        .setup(|_app| {
-            log_step("4. In setup hook!");
-            Ok(())
+            storage: Mutex::new(DiagnosticStorage::new()),
         })
         .invoke_handler(tauri::generate_handler![
             commands::run_full_diagnostics,
@@ -394,11 +384,9 @@ pub fn run() {
             commands::get_antigravity_status,
             commands::apply_antigravity_unlock,
             commands::rollback_antigravity_unlock,
+            commands::get_google_flow_info,
+            commands::open_google_flow,
         ])
-        .run(tauri::generate_context!());
-
-    match res {
-        Ok(_) => log_step("5. run() exited with Ok"),
-        Err(e) => log_step(&format!("5. run() exited with Err: {:?}", e)),
-    }
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }

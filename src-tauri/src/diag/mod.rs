@@ -1,6 +1,7 @@
 pub mod antigravity_unlock;
 pub mod comparison;
 pub mod dns;
+pub mod flow_unlocker;
 pub mod free_hub;
 pub mod ide;
 pub mod mcp;

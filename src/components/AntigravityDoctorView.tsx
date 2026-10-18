@@ -16,6 +16,8 @@ import {
   Layers,
   Sparkles,
   ExternalLink,
+  Video,
+  MonitorPlay,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { AntigravityDoctorReport } from "../types";
@@ -24,12 +26,29 @@ export const AntigravityDoctorView: React.FC = () => {
   const [data, setData] = useState<AntigravityDoctorReport | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [flowLaunching, setFlowLaunching] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<string>("ag_relay");
   const [feedbackMsg, setFeedbackMsg] = useState<{
     text: string;
     isError: boolean;
   } | null>(null);
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
+
+  const handleLaunchGoogleFlow = async () => {
+    setFlowLaunching(true);
+    setFeedbackMsg(null);
+    try {
+      const res = await invoke<string>("open_google_flow");
+      setFeedbackMsg({ text: res, isError: false });
+    } catch (err: any) {
+      setFeedbackMsg({
+        text: `Ошибка запуска Google Flow: ${err.toString()}`,
+        isError: true,
+      });
+    } finally {
+      setFlowLaunching(false);
+    }
+  };
 
   const fetchStatus = async () => {
     setLoading(true);
@@ -255,6 +274,37 @@ export const AntigravityDoctorView: React.FC = () => {
         </div>
       </div>
 
+      {/* Google Flow Studio Banner */}
+      <div className="p-5 rounded-2xl border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-surface to-slate-900/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg shadow-purple-500/5">
+        <div className="flex items-center gap-3.5">
+          <div className="p-3 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 shrink-0">
+            <Video className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-white">
+                Google Flow Studio (Veo & Imagen 3)
+              </h3>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                Встроенный обход
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Прямой доступ к flow.google.com с автоматической подменой RPC региональной доступности. Работает без расширения Tampermonkey.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleLaunchGoogleFlow}
+          disabled={flowLaunching}
+          className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-md shadow-purple-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
+        >
+          <MonitorPlay className={`w-4 h-4 ${flowLaunching ? "animate-spin" : ""}`} />
+          {flowLaunching ? "Открытие окна..." : "🚀 Запустить Google Flow"}
+        </button>
+      </div>
+
       {/* 1-Click Action Center */}
       <div className="bg-surface/60 border border-border/50 rounded-2xl p-6 space-y-5 backdrop-blur-xl">
         <div className="space-y-1">
@@ -296,12 +346,10 @@ export const AntigravityDoctorView: React.FC = () => {
               </div>
             </div>
             <h3 className="font-semibold text-white text-sm mb-1">
-              ⚡ Antigravity Relay (AG Unlocker)
+              ⚡ Автоматический шлюз
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Точный аналог проверенной программы AG_2.23.1. Маршрутизация NRPT
-              на выделенный шлюз и локальный ag_dns. Обходит ошибку region-400
-              Google CloudCode.
+              Оптимальный маршрут для Google Antigravity и Gemini. Автоматически обходит региональные ограничения и восстанавливает доступ к ИИ.
             </p>
           </div>
 
@@ -495,7 +543,7 @@ export const AntigravityDoctorView: React.FC = () => {
         <div className="bg-surface/50 border border-border/50 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Локальный шлюз (ag_dns)
+              Локальный шлюз
             </span>
             <span
               className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
@@ -504,25 +552,23 @@ export const AntigravityDoctorView: React.FC = () => {
                   : "bg-slate-700 text-slate-400 border border-slate-600"
               }`}
             >
-              {data?.ag_dns_running
-                ? `PID ${data.ag_dns_pid || ""}`
-                : data?.loopback_relay_ready
-                ? "Порт 443 OK"
+              {data?.ag_dns_running || data?.loopback_relay_ready
+                ? "Активен"
                 : "Не запущен"}
             </span>
           </div>
           <div>
             <h4 className="font-semibold text-white text-sm">
-              127.65.71.1:443
+              Безопасный туннель Google AI
             </h4>
             <p className="text-xs text-slate-400 mt-1">
-              Локальный TLS-форвардер для Google PA
+              Локальная пересылка запросов к Google PA
             </p>
           </div>
           <div className="pt-2 border-t border-border/40 text-xs text-slate-400 flex items-center justify-between">
-            <span>Процесс: ag_dns.exe</span>
+            <span>Канал: 127.65.71.1</span>
             <span className={data?.loopback_relay_ready ? "text-emerald-400" : "text-slate-500"}>
-              {data?.loopback_relay_ready ? "Слушает порт" : "Спит"}
+              {data?.loopback_relay_ready ? "Готов к работе" : "Отключен"}
             </span>
           </div>
         </div>
@@ -653,7 +699,7 @@ export const AntigravityDoctorView: React.FC = () => {
       <div className="bg-surface/30 border border-border/40 rounded-xl p-5 space-y-3">
         <h4 className="text-sm font-semibold text-white flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-sky-400" />
-          Как это работает под капотом (архитектура AG Unlocker):
+          Принцип работы обхода ограничений:
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-400 leading-relaxed">
           <div className="space-y-1">
@@ -683,7 +729,7 @@ export const AntigravityDoctorView: React.FC = () => {
               3. Обход region-400
             </span>
             <p>
-              Локальный шлюз (ag_dns / порт 127.65.71.1) принимает запросы от
+              Локальный шлюз принимает запросы от
               Language Server и безопасно передает их в Google PA, скрывая
               заблокированные региональные маркеры.
             </p>

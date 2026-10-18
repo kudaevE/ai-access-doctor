@@ -4,6 +4,7 @@ import { Header } from "./components/Header";
 import { DashboardView } from "./components/DashboardView";
 import { ErrorDetectiveView } from "./components/ErrorDetectiveView";
 import { AntigravityDoctorView } from "./components/AntigravityDoctorView";
+import { GoogleFlowView } from "./components/GoogleFlowView";
 import { FreeHubView } from "./components/FreeHubView";
 import { ConnectionComparisonView } from "./components/ConnectionComparisonView";
 import { IdeDoctorView } from "./components/IdeDoctorView";
@@ -502,6 +503,8 @@ export const App: React.FC = () => {
           )}
 
           {activeTab === "antigravity_doctor" && <AntigravityDoctorView />}
+
+          {activeTab === "google_flow" && <GoogleFlowView />}
 
           {activeTab === "free_hub" && <FreeHubView />}
 

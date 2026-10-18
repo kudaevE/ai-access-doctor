@@ -1,3 +1,4 @@
 @echo off
-cd /d "C:\AI Access Doctor"
-start "" "C:\AI Access Doctor\src-tauri\target\release\ai-access-doctor.exe"
+cd /d "%~dp0"
+start "" "%~dp0src-tauri\target\release\ai-access-doctor.exe"
+exit

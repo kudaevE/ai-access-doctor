@@ -389,3 +389,9 @@ export interface AntigravityDoctorReport {
   status_badge: "OPTIMAL" | "WARNING" | "DISABLED";
 }
 
+export interface FlowUnlockInfo {
+  flow_url: string;
+  script_code: string;
+  bookmarklet: string;
+  is_window_open: boolean;
+}
