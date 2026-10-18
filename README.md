@@ -138,7 +138,7 @@ AI Access Doctor спроектирован по принципу **100% Local-F
 
 ```powershell
 # 1. Клонирование репозитория
-git clone https://github.com/<ваш-аккаунт>/ai-access-doctor.git
+git clone https://github.com/kudaevE/ai-access-doctor.git
 cd ai-access-doctor
 
 # 2. Установка зависимостей интерфейса
