@@ -347,6 +347,31 @@ pub mod commands {
     }
 
     #[tauri::command]
+    pub fn get_antigravity_client_suite_info() -> Result<diag::antigravity_unlock::AntigravityClientSuiteInfo, String> {
+        Ok(diag::antigravity_unlock::get_antigravity_client_suite_info())
+    }
+
+    #[tauri::command]
+    pub fn launch_antigravity_with_proxy(proxy_url: String) -> Result<String, String> {
+        diag::antigravity_unlock::launch_antigravity_with_proxy(&proxy_url)
+    }
+
+    #[tauri::command]
+    pub fn patch_antigravity_settings(proxy_url: String) -> Result<String, String> {
+        diag::antigravity_unlock::patch_antigravity_settings(&proxy_url)
+    }
+
+    #[tauri::command]
+    pub fn patch_antigravity_desktop_shortcut(proxy_url: String) -> Result<String, String> {
+        diag::antigravity_unlock::patch_antigravity_desktop_shortcut(&proxy_url)
+    }
+
+    #[tauri::command]
+    pub fn open_antigravity_oauth_browser(proxy_url: String) -> Result<String, String> {
+        diag::antigravity_unlock::open_antigravity_oauth_browser(&proxy_url)
+    }
+
+    #[tauri::command]
     pub fn get_google_flow_info(app: AppHandle) -> Result<diag::flow_unlocker::FlowUnlockInfo, String> {
         Ok(diag::flow_unlocker::get_flow_info(&app))
     }
@@ -499,6 +524,11 @@ pub fn run() {
             commands::get_antigravity_status,
             commands::apply_antigravity_unlock,
             commands::rollback_antigravity_unlock,
+            commands::get_antigravity_client_suite_info,
+            commands::launch_antigravity_with_proxy,
+            commands::patch_antigravity_settings,
+            commands::patch_antigravity_desktop_shortcut,
+            commands::open_antigravity_oauth_browser,
             commands::get_google_flow_info,
             commands::open_google_flow,
             commands::open_flow_in_external_browser,

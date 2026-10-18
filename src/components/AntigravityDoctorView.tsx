@@ -19,16 +19,27 @@ import {
   Video,
   MonitorPlay,
   Globe,
+  Play,
+  Key,
+  Sliders,
+  BookmarkCheck,
+  FolderOpen,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
-import { AntigravityDoctorReport } from "../types";
+import { AntigravityDoctorReport, AntigravityClientSuiteInfo } from "../types";
 import { HostsDoctorSection } from "./HostsDoctorSection";
 
 export const AntigravityDoctorView: React.FC = () => {
   const [data, setData] = useState<AntigravityDoctorReport | null>(null);
+  const [clientInfo, setClientInfo] = useState<AntigravityClientSuiteInfo | null>(null);
+  const [proxyUrl, setProxyUrl] = useState<string>("http://127.0.0.1:53200");
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [flowLaunching, setFlowLaunching] = useState<boolean>(false);
+  const [isLaunchingAntigravity, setIsLaunchingAntigravity] = useState<boolean>(false);
+  const [isOpeningLogin, setIsOpeningLogin] = useState<boolean>(false);
+  const [isPatchingSettings, setIsPatchingSettings] = useState<boolean>(false);
+  const [isPatchingShortcut, setIsPatchingShortcut] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<string>("ag_relay");
   const [feedbackMsg, setFeedbackMsg] = useState<{
     text: string;
@@ -49,6 +60,23 @@ export const AntigravityDoctorView: React.FC = () => {
       });
     } finally {
       setFlowLaunching(false);
+    }
+  };
+
+  const fetchClientInfo = async () => {
+    try {
+      const info = await invoke<AntigravityClientSuiteInfo>("get_antigravity_client_suite_info");
+      setClientInfo(info);
+      if (info.current_proxy_in_settings) {
+        setProxyUrl(info.current_proxy_in_settings);
+      } else {
+        const online = info.detected_proxies.find(p => p.is_online);
+        if (online) {
+          setProxyUrl(online.url);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch client suite info:", e);
     }
   };
 
@@ -87,7 +115,62 @@ export const AntigravityDoctorView: React.FC = () => {
 
   useEffect(() => {
     fetchStatus();
+    fetchClientInfo();
   }, []);
+
+  const handleLaunchAntigravity = async () => {
+    setIsLaunchingAntigravity(true);
+    setFeedbackMsg(null);
+    try {
+      const res = await invoke<string>("launch_antigravity_with_proxy", { proxyUrl });
+      setFeedbackMsg({ text: res, isError: false });
+      await fetchClientInfo();
+    } catch (err: any) {
+      setFeedbackMsg({ text: `Ошибка запуска: ${err.toString()}`, isError: true });
+    } finally {
+      setIsLaunchingAntigravity(false);
+    }
+  };
+
+  const handleOpenLoginBrowser = async () => {
+    setIsOpeningLogin(true);
+    setFeedbackMsg(null);
+    try {
+      const res = await invoke<string>("open_antigravity_oauth_browser", { proxyUrl });
+      setFeedbackMsg({ text: res, isError: false });
+    } catch (err: any) {
+      setFeedbackMsg({ text: err.toString(), isError: true });
+    } finally {
+      setIsOpeningLogin(false);
+    }
+  };
+
+  const handlePatchSettings = async () => {
+    setIsPatchingSettings(true);
+    setFeedbackMsg(null);
+    try {
+      const res = await invoke<string>("patch_antigravity_settings", { proxyUrl });
+      setFeedbackMsg({ text: res, isError: false });
+      await fetchClientInfo();
+    } catch (err: any) {
+      setFeedbackMsg({ text: `Ошибка сохранения: ${err.toString()}`, isError: true });
+    } finally {
+      setIsPatchingSettings(false);
+    }
+  };
+
+  const handlePatchShortcut = async () => {
+    setIsPatchingShortcut(true);
+    setFeedbackMsg(null);
+    try {
+      const res = await invoke<string>("patch_antigravity_desktop_shortcut", { proxyUrl });
+      setFeedbackMsg({ text: res, isError: false });
+    } catch (err: any) {
+      setFeedbackMsg({ text: `Ошибка создания ярлыка: ${err.toString()}`, isError: true });
+    } finally {
+      setIsPatchingShortcut(false);
+    }
+  };
 
   const handleApply = async () => {
     setActionLoading(true);
@@ -98,6 +181,7 @@ export const AntigravityDoctorView: React.FC = () => {
       });
       setFeedbackMsg({ text: res, isError: false });
       await fetchStatus();
+      await fetchClientInfo();
     } catch (err: any) {
       setFeedbackMsg({
         text: `Не удалось применить обход: ${err.toString()}`,
@@ -115,6 +199,7 @@ export const AntigravityDoctorView: React.FC = () => {
       const res = await invoke<string>("rollback_antigravity_unlock");
       setFeedbackMsg({ text: res, isError: false });
       await fetchStatus();
+      await fetchClientInfo();
     } catch (err: any) {
       setFeedbackMsg({
         text: `Ошибка при откате настроек: ${err.toString()}`,
@@ -320,6 +405,204 @@ export const AntigravityDoctorView: React.FC = () => {
           <Globe className={`w-4 h-4 ${flowLaunching ? "animate-spin" : ""}`} />
           {flowLaunching ? "Запуск браузера..." : "🚀 Запустить Google Flow в браузере"}
         </button>
+      </div>
+
+      {/* Antigravity Studio & Proxy Launcher Suite */}
+      <div className="bg-surface/60 border border-sky-500/30 rounded-2xl p-6 space-y-6 backdrop-blur-xl shadow-lg shadow-sky-500/5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                <Play className="w-5 h-5 fill-sky-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  Запуск Antigravity с прокси и OAuth Авторизация
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Прямой запуск Electron с флагами прокси, обход блокировки QUIC/UDP, настройка settings.json и вход в Google через изолированный браузер
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Status Pills */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${
+                clientInfo?.is_installed
+                  ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                  : "bg-rose-500/10 text-rose-300 border-rose-500/30"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  clientInfo?.is_installed ? "bg-emerald-400" : "bg-rose-400"
+                }`}
+              />
+              {clientInfo?.is_installed
+                ? "Antigravity найдена"
+                : "Antigravity не найдена"}
+            </span>
+
+            <span
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${
+                clientInfo?.is_running
+                  ? "bg-sky-500/10 text-sky-300 border-sky-500/30"
+                  : "bg-slate-700/30 text-slate-400 border-slate-600/30"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  clientInfo?.is_running ? "bg-sky-400" : "bg-slate-500"
+                }`}
+              />
+              {clientInfo?.is_running
+                ? `Активна (PID: ${clientInfo.running_pids.slice(0, 2).join(", ")})`
+                : "Остановлена"}
+            </span>
+
+            <span
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${
+                clientInfo?.settings_configured
+                  ? "bg-purple-500/10 text-purple-300 border-purple-500/30"
+                  : "bg-amber-500/10 text-amber-300 border-amber-500/30"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  clientInfo?.settings_configured ? "bg-purple-400" : "bg-amber-400"
+                }`}
+              />
+              {clientInfo?.settings_configured
+                ? "settings.json (override OK)"
+                : "settings.json не настроен"}
+            </span>
+          </div>
+        </div>
+
+        {/* Proxy Selection */}
+        <div className="space-y-3 bg-surface-elevated/40 p-4 rounded-xl border border-border/40">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-sky-400" />
+              Выберите рабочий прокси для запуска Antigravity:
+            </label>
+            <span className="text-xs text-slate-400">
+              Выбран адрес: <code className="text-sky-300 font-mono">{proxyUrl}</code>
+            </span>
+          </div>
+
+          {/* Detected proxy buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            {clientInfo?.detected_proxies.map((p) => (
+              <button
+                key={p.url}
+                onClick={() => setProxyUrl(p.url)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-2 transition-all ${
+                  proxyUrl === p.url
+                    ? "bg-sky-500/20 border-sky-500 text-sky-200 shadow-sm shadow-sky-500/20"
+                    : "bg-surface/80 border-border/60 text-slate-300 hover:border-slate-500"
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    p.is_online ? "bg-emerald-400 animate-pulse" : "bg-slate-600"
+                  }`}
+                />
+                <span>{p.name}</span>
+                <span className="text-[10px] text-slate-400">({p.port})</span>
+                {p.is_online && (
+                  <span className="text-[10px] text-emerald-400 font-bold ml-1">
+                    Онлайн
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Manual custom input */}
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="text"
+              value={proxyUrl}
+              onChange={(e) => setProxyUrl(e.target.value)}
+              placeholder="http://127.0.0.1:53200 или http://127.0.0.1:10809"
+              className="flex-1 bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-500"
+            />
+            <button
+              onClick={handlePatchSettings}
+              disabled={isPatchingSettings}
+              className="px-3.5 py-2 rounded-lg bg-surface hover:bg-slate-700/60 border border-border/60 text-xs text-slate-300 font-medium transition-all active:scale-95 shrink-0"
+              title="Сохранить этот прокси в %APPDATA%\Antigravity\User\settings.json"
+            >
+              {isPatchingSettings ? "Сохранение..." : "⚙️ Сохранить в settings.json"}
+            </button>
+          </div>
+        </div>
+
+        {/* Actions Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Action 1: Launch Antigravity with Proxy */}
+          <button
+            onClick={handleLaunchAntigravity}
+            disabled={isLaunchingAntigravity}
+            className="px-5 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs shadow-md shadow-sky-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <Play
+              className={`w-4 h-4 fill-white ${
+                isLaunchingAntigravity ? "animate-spin" : ""
+              }`}
+            />
+            <span>
+              {isLaunchingAntigravity
+                ? "Запуск процесса..."
+                : "🚀 Запустить Antigravity с прокси"}
+            </span>
+          </button>
+
+          {/* Action 2: OAuth Login in isolated browser */}
+          <button
+            onClick={handleOpenLoginBrowser}
+            disabled={isOpeningLogin}
+            className="px-5 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <Key className={`w-4 h-4 ${isOpeningLogin ? "animate-spin" : ""}`} />
+            <span>
+              {isOpeningLogin
+                ? "Открытие браузера..."
+                : "🔑 Войти в Google (OAuth Browser)"}
+            </span>
+          </button>
+
+          {/* Action 3: Patch Desktop Shortcut */}
+          <button
+            onClick={handlePatchShortcut}
+            disabled={isPatchingShortcut}
+            className="px-5 py-3.5 rounded-xl bg-surface-elevated hover:bg-slate-700/60 border border-border/60 text-slate-200 font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <BookmarkCheck
+              className={`w-4 h-4 text-sky-400 ${
+                isPatchingShortcut ? "animate-spin" : ""
+              }`}
+            />
+            <span>
+              {isPatchingShortcut
+                ? "Обновление..."
+                : "📌 Пропатчить ярлык на Рабочем столе"}
+            </span>
+          </button>
+        </div>
+
+        {/* Helpful hint for login */}
+        <div className="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-xs text-sky-200/90 flex items-start gap-2.5">
+          <HelpCircle className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-semibold text-white">Как авторизоваться без зависаний:</span> 
+            {" "}1. Нажмите <b>«🚀 Запустить Antigravity с прокси»</b>. 2. В окне Antigravity нажмите кнопку <b>«Sign in»</b>. 
+            3. Сразу нажмите здесь <b>«🔑 Войти в Google (OAuth Browser)»</b> — откроется изолированное окно браузера с европейским прокси, в котором авторизация Google завершится без региональной ошибки, и токен автоматически передастся в Antigravity.
+          </div>
+        </div>
       </div>
 
       {/* 1-Click Action Center */}

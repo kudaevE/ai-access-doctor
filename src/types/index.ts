@@ -389,6 +389,25 @@ export interface AntigravityDoctorReport {
   status_badge: "OPTIMAL" | "WARNING" | "DISABLED";
 }
 
+export interface DetectedProxyEndpoint {
+  name: string;
+  url: string;
+  is_online: boolean;
+  port: number;
+}
+
+export interface AntigravityClientSuiteInfo {
+  is_installed: boolean;
+  exe_path?: string;
+  is_running: boolean;
+  running_pids: number[];
+  settings_path: string;
+  settings_configured: boolean;
+  current_proxy_in_settings?: string;
+  detected_proxies: DetectedProxyEndpoint[];
+  latest_oauth_url?: string;
+}
+
 export interface FlowUnlockInfo {
   flow_url: string;
   script_code: string;

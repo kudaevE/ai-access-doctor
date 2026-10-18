@@ -148,10 +148,14 @@ graph TD
     Speed --> |Parallel TLS Ping| Providers[Groq / Gemini / OpenAI / Claude]
 ```
 
-### 1. ⚡ Antigravity Doctor (Google CloudCode & PA)
-- **Безопасный Windows NRPT:** направляет исключительно запросы к `*.googleapis.com` на чистые независимые резолверы без смены DNS всего компьютера.
+### 1. ⚡ Antigravity Doctor (Google CloudCode & PA Suite)
+- **🚀 Запуск Antigravity с прокси:** автоматический запуск Electron-клиента со специальными Chromium-флагами `--proxy-server="<proxy>" --proxy-bypass-list="localhost;127.0.0.1;[::1]" --disable-quic` (отключает зависающий протокол QUIC/UDP и форсирует TCP/TLS).
+- **🔑 Вход в Google без ошибок (OAuth Browser Helper):** перехват свежей OAuth-ссылки из `language_server.log` и запуск изолированного окна Chrome/Edge через европейский прокси — авторизация проходит за 5 секунд и автоматически передается в Antigravity.
+- **⚙️ Автоматический патч `settings.json`:** прописывает `"http.proxySupport": "override"`, `"http.proxyStrictSSL": false` и адрес прокси в `%APPDATA%\Antigravity\User\settings.json`, заставляя внутренний Go Language Server работать через прокси.
+- **📌 Пропатчивание ярлыков Windows:** обновление ярлыка `Antigravity.lnk` на Рабочем столе для постоянного запуска с прокси-флагами по обычному двойному клику.
+- **🔍 Авто-детект локальных прокси:** определение статуса Dagami Bridge (`53200`), v2rayN (`10809`/`10808`), Clash/Sing-box (`7890`), Nekoray (`2080`/`2081`) и WinINet в реальном времени.
+- **Безопасный Windows NRPT:** направляет запросы к `*.googleapis.com` на чистые независимые резолверы без смены DNS всего компьютера.
 - **Приоритет IPv4 над IPv6:** устраняет 30-секундные зависания соединений Google Cloud через префикс `::ffff:0:0/96`.
-- **Локальный шлюз (ag_dns loopback):** изолированный прокси для устранения ошибок `region-400` в Language Server.
 - **Быстрый откат:** 1 клик для полного возврата системы в исходное состояние.
 
 ### 2. 🎬 Google Flow Studio (Veo & Imagen 3)
