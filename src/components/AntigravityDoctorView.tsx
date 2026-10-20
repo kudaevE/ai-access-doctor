@@ -40,6 +40,8 @@ export const AntigravityDoctorView: React.FC = () => {
   const [isOpeningLogin, setIsOpeningLogin] = useState<boolean>(false);
   const [isPatchingSettings, setIsPatchingSettings] = useState<boolean>(false);
   const [isPatchingShortcut, setIsPatchingShortcut] = useState<boolean>(false);
+  const [isStartingBridge, setIsStartingBridge] = useState<boolean>(false);
+  const [isKillingProcesses, setIsKillingProcesses] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<string>("ag_relay");
   const [feedbackMsg, setFeedbackMsg] = useState<{
     text: string;
@@ -67,13 +69,16 @@ export const AntigravityDoctorView: React.FC = () => {
     try {
       const info = await invoke<AntigravityClientSuiteInfo>("get_antigravity_client_suite_info");
       setClientInfo(info);
-      if (info.current_proxy_in_settings) {
+      
+      // Smart proxy prioritization:
+      // 1. If an online proxy exists, select it
+      const online = info.detected_proxies.find(p => p.is_online);
+      if (online) {
+        setProxyUrl(online.url);
+      } else if (info.current_proxy_in_settings && !info.current_proxy_in_settings.includes("7890")) {
         setProxyUrl(info.current_proxy_in_settings);
       } else {
-        const online = info.detected_proxies.find(p => p.is_online);
-        if (online) {
-          setProxyUrl(online.url);
-        }
+        setProxyUrl("http://127.0.0.1:53200");
       }
     } catch (e) {
       console.warn("Failed to fetch client suite info:", e);
@@ -122,13 +127,47 @@ export const AntigravityDoctorView: React.FC = () => {
     setIsLaunchingAntigravity(true);
     setFeedbackMsg(null);
     try {
-      const res = await invoke<string>("launch_antigravity_with_proxy", { proxyUrl });
+      const res = await invoke<string>("launch_antigravity_with_proxy", { proxyUrl, forceRestart: true });
       setFeedbackMsg({ text: res, isError: false });
       await fetchClientInfo();
     } catch (err: any) {
       setFeedbackMsg({ text: `Ошибка запуска: ${err.toString()}`, isError: true });
     } finally {
       setIsLaunchingAntigravity(false);
+    }
+  };
+
+  const handleKillProcesses = async () => {
+    setIsKillingProcesses(true);
+    setFeedbackMsg(null);
+    try {
+      const res = await invoke<string>("kill_antigravity_processes");
+      setFeedbackMsg({ text: res, isError: false });
+      await fetchClientInfo();
+    } catch (err: any) {
+      setFeedbackMsg({ text: `Ошибка завершения: ${err.toString()}`, isError: true });
+    } finally {
+      setIsKillingProcesses(false);
+    }
+  };
+
+  const handleToggleBridge = async () => {
+    setIsStartingBridge(true);
+    setFeedbackMsg(null);
+    try {
+      if (clientInfo?.is_internal_bridge_active) {
+        await invoke<string>("stop_internal_proxy_bridge");
+        setFeedbackMsg({ text: "Встроенный европейский прокси-мост успешно остановлен.", isError: false });
+      } else {
+        const port = await invoke<number>("start_internal_proxy_bridge", { port: 53200 });
+        setFeedbackMsg({ text: `Встроенный европейский прокси-мост запущен на порту ${port}! Трафик туннелируется через защищенный шлюз.`, isError: false });
+        setProxyUrl(`http://127.0.0.1:${port}`);
+      }
+      await fetchClientInfo();
+    } catch (err: any) {
+      setFeedbackMsg({ text: `Ошибка управления мостом: ${err.toString()}`, isError: true });
+    } finally {
+      setIsStartingBridge(false);
     }
   };
 
@@ -481,6 +520,59 @@ export const AntigravityDoctorView: React.FC = () => {
           </div>
         </div>
 
+        {/* Built-in European Bridge Hero Card */}
+        <div className="p-4 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-surface to-slate-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl border shrink-0 ${clientInfo?.is_internal_bridge_active ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-indigo-500/20 text-indigo-400 border-indigo-500/30"}`}>
+              <Server className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">Встроенный европейский мост AI Access Doctor</h3>
+                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${clientInfo?.is_internal_bridge_active ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" : "bg-slate-700/50 text-slate-400 border-slate-600/50"}`}>
+                  {clientInfo?.is_internal_bridge_active ? `Активен на 127.0.0.1:${clientInfo.internal_bridge_port}` : "Остановлен"}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Прямой локальный туннель к европейскому шлюзу Google Cloud Code. Не требует сторонних программ или VPN.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleToggleBridge}
+            disabled={isStartingBridge}
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-2 shrink-0 ${
+              clientInfo?.is_internal_bridge_active
+                ? "bg-rose-600/80 hover:bg-rose-500 text-white border border-rose-500/40"
+                : "bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-400 hover:to-sky-400 text-white shadow-indigo-500/20"
+            }`}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isStartingBridge ? "animate-spin" : ""}`} />
+            {isStartingBridge
+              ? "Переключение..."
+              : clientInfo?.is_internal_bridge_active
+              ? "Остановить мост"
+              : "⚡ Включить встроенный мост (53200)"}
+          </button>
+        </div>
+
+        {/* Proxy Warning if settings.json is poisoned with offline port */}
+        {clientInfo?.current_proxy_in_settings?.includes("7890") && (
+          <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>В settings.json прописан неактивный порт 7890 (Clash выключен). Переключитесь на порт 53200 и нажмите «Сохранить».</span>
+            </div>
+            <button
+              onClick={() => { setProxyUrl("http://127.0.0.1:53200"); handlePatchSettings(); }}
+              className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 rounded-lg text-white font-medium text-xs shrink-0 self-start sm:self-auto"
+            >
+              Исправить settings.json на 53200
+            </button>
+          </div>
+        )}
+
         {/* Proxy Selection */}
         <div className="space-y-3 bg-surface-elevated/40 p-4 rounded-xl border border-border/40">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
@@ -542,12 +634,12 @@ export const AntigravityDoctorView: React.FC = () => {
         </div>
 
         {/* Actions Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Action 1: Launch Antigravity with Proxy */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Action 1: Launch Antigravity with Proxy (with auto restart) */}
           <button
             onClick={handleLaunchAntigravity}
             disabled={isLaunchingAntigravity}
-            className="px-5 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs shadow-md shadow-sky-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="px-4 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs shadow-md shadow-sky-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Play
               className={`w-4 h-4 fill-white ${
@@ -556,8 +648,8 @@ export const AntigravityDoctorView: React.FC = () => {
             />
             <span>
               {isLaunchingAntigravity
-                ? "Запуск процесса..."
-                : "🚀 Запустить Antigravity с прокси"}
+                ? "Запуск..."
+                : "🚀 Перезапустить Antigravity с прокси"}
             </span>
           </button>
 
@@ -565,12 +657,12 @@ export const AntigravityDoctorView: React.FC = () => {
           <button
             onClick={handleOpenLoginBrowser}
             disabled={isOpeningLogin}
-            className="px-5 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Key className={`w-4 h-4 ${isOpeningLogin ? "animate-spin" : ""}`} />
             <span>
               {isOpeningLogin
-                ? "Открытие браузера..."
+                ? "Поиск ссылки..."
                 : "🔑 Войти в Google (OAuth Browser)"}
             </span>
           </button>
@@ -579,7 +671,7 @@ export const AntigravityDoctorView: React.FC = () => {
           <button
             onClick={handlePatchShortcut}
             disabled={isPatchingShortcut}
-            className="px-5 py-3.5 rounded-xl bg-surface-elevated hover:bg-slate-700/60 border border-border/60 text-slate-200 font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="px-4 py-3 rounded-xl bg-surface-elevated hover:bg-slate-700/60 border border-border/60 text-slate-200 font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <BookmarkCheck
               className={`w-4 h-4 text-sky-400 ${
@@ -589,10 +681,30 @@ export const AntigravityDoctorView: React.FC = () => {
             <span>
               {isPatchingShortcut
                 ? "Обновление..."
-                : "📌 Пропатчить ярлык на Рабочем столе"}
+                : "📌 Обновить ярлык на Рабочем столе"}
+            </span>
+          </button>
+
+          {/* Action 4: Kill Hanging Antigravity Processes */}
+          <button
+            onClick={handleKillProcesses}
+            disabled={isKillingProcesses}
+            className="px-4 py-3 rounded-xl bg-surface-elevated hover:bg-rose-950/40 border border-border/60 hover:border-rose-500/40 text-rose-300 font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            title="Завершить все фоновые процессы Antigravity и language_server"
+          >
+            <XCircle
+              className={`w-4 h-4 text-rose-400 ${
+                isKillingProcesses ? "animate-spin" : ""
+              }`}
+            />
+            <span>
+              {isKillingProcesses
+                ? "Завершение..."
+                : "🛑 Сбросить процессы Antigravity"}
             </span>
           </button>
         </div>
+
 
         {/* Helpful hint for login */}
         <div className="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-xs text-sky-200/90 flex items-start gap-2.5">

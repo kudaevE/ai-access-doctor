@@ -454,6 +454,8 @@ pub struct AntigravityClientSuiteInfo {
     pub current_proxy_in_settings: Option<String>,
     pub detected_proxies: Vec<DetectedProxyEndpoint>,
     pub latest_oauth_url: Option<String>,
+    pub is_internal_bridge_active: bool,
+    pub internal_bridge_port: u16,
 }
 
 pub fn is_port_online(port: u16) -> bool {
@@ -464,8 +466,22 @@ pub fn is_port_online(port: u16) -> bool {
 }
 
 pub fn get_detected_proxies() -> Vec<DetectedProxyEndpoint> {
+    let mut result = Vec::new();
+
+    let internal_running = crate::diag::proxy_bridge::is_bridge_running();
+    let internal_port = crate::diag::proxy_bridge::get_bridge_port();
+
+    if internal_running && internal_port > 0 {
+        result.push(DetectedProxyEndpoint {
+            name: "Встроенный европейский мост AI Access Doctor".to_string(),
+            url: format!("http://127.0.0.1:{}", internal_port),
+            is_online: true,
+            port: internal_port,
+        });
+    }
+
     let candidates = [
-        ("Dagami Agent Proxy Bridge", 53200),
+        ("Dagami Agent Proxy / Внешний мост", 53200),
         ("v2rayN / Xray (HTTP)", 10809),
         ("Clash / Sing-box (Mixed)", 7890),
         ("v2rayN / Xray (SOCKS5)", 10808),
@@ -473,8 +489,11 @@ pub fn get_detected_proxies() -> Vec<DetectedProxyEndpoint> {
         ("Nekoray (SOCKS5)", 2080),
     ];
 
-    let mut result = Vec::new();
     for (name, port) in candidates {
+        // Skip adding 53200 if internal bridge is already running on 53200
+        if internal_running && internal_port == port {
+            continue;
+        }
         let online = is_port_online(port);
         let prefix = if name.contains("SOCKS") { "socks5" } else { "http" };
         result.push(DetectedProxyEndpoint {
@@ -511,6 +530,31 @@ pub fn extract_latest_oauth_url(content: &str) -> Option<String> {
     last_found
 }
 
+#[cfg(windows)]
+fn read_log_shared(path: &std::path::Path) -> Option<String> {
+    use std::os::windows::fs::OpenOptionsExt;
+    const FILE_SHARE_READ: u32 = 0x00000001;
+    const FILE_SHARE_WRITE: u32 = 0x00000002;
+    const FILE_SHARE_DELETE: u32 = 0x00000004;
+
+    let mut opts = std::fs::OpenOptions::new();
+    opts.read(true);
+    opts.share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE);
+    if let Ok(mut f) = opts.open(path) {
+        use std::io::Read;
+        let mut s = String::new();
+        if f.read_to_string(&mut s).is_ok() {
+            return Some(s);
+        }
+    }
+    std::fs::read_to_string(path).ok()
+}
+
+#[cfg(not(windows))]
+fn read_log_shared(path: &std::path::Path) -> Option<String> {
+    std::fs::read_to_string(path).ok()
+}
+
 pub fn get_antigravity_log_oauth_url() -> Option<String> {
     let mut candidate_paths = Vec::new();
     if let Ok(appdata) = std::env::var("APPDATA") {
@@ -522,7 +566,7 @@ pub fn get_antigravity_log_oauth_url() -> Option<String> {
 
     for path in candidate_paths {
         if path.exists() {
-            if let Ok(content) = std::fs::read_to_string(&path) {
+            if let Some(content) = read_log_shared(&path) {
                 if let Some(url) = extract_latest_oauth_url(&content) {
                     return Some(url);
                 }
@@ -530,6 +574,29 @@ pub fn get_antigravity_log_oauth_url() -> Option<String> {
         }
     }
     None
+}
+
+pub fn wait_for_antigravity_oauth_url(timeout_secs: u64) -> Option<String> {
+    let start = std::time::Instant::now();
+    loop {
+        if let Some(url) = get_antigravity_log_oauth_url() {
+            return Some(url);
+        }
+        if start.elapsed().as_secs() >= timeout_secs {
+            break;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+    None
+}
+
+pub fn kill_antigravity_processes() -> Result<String, String> {
+    let script = "Get-Process -Name Antigravity, language_server -ErrorAction SilentlyContinue | Stop-Process -Force";
+    let _ = crate::diag::silent_command("powershell")
+        .args(["-NoProfile", "-Command", script])
+        .output();
+    std::thread::sleep(std::time::Duration::from_millis(600));
+    Ok("Все запущенные процессы Antigravity и language_server успешно завершены.".to_string())
 }
 
 pub fn get_antigravity_client_suite_info() -> AntigravityClientSuiteInfo {
@@ -572,6 +639,8 @@ pub fn get_antigravity_client_suite_info() -> AntigravityClientSuiteInfo {
 
     let detected_proxies = get_detected_proxies();
     let latest_oauth_url = get_antigravity_log_oauth_url();
+    let is_internal_bridge_active = crate::diag::proxy_bridge::is_bridge_running();
+    let internal_bridge_port = crate::diag::proxy_bridge::get_bridge_port();
 
     AntigravityClientSuiteInfo {
         is_installed,
@@ -583,6 +652,8 @@ pub fn get_antigravity_client_suite_info() -> AntigravityClientSuiteInfo {
         current_proxy_in_settings: current_proxy,
         detected_proxies,
         latest_oauth_url,
+        is_internal_bridge_active,
+        internal_bridge_port,
     }
 }
 
@@ -613,7 +684,7 @@ pub fn patch_antigravity_settings(proxy_url: &str) -> Result<String, String> {
     Ok(format!("Настройки успешно обновлены: прокси {} прописан с флагом http.proxySupport: override.", proxy_url))
 }
 
-pub fn launch_antigravity_with_proxy(proxy_url: &str) -> Result<String, String> {
+pub async fn launch_antigravity_with_proxy(proxy_url: &str, force_restart: bool) -> Result<String, String> {
     let (is_installed, ide_path_opt, _, _, _, _) = inspect_antigravity_installation();
     if !is_installed || ide_path_opt.is_none() {
         return Err("Исполняемый файл Antigravity.exe не найден в системе. Убедитесь, что Antigravity установлена.".to_string());
@@ -621,29 +692,54 @@ pub fn launch_antigravity_with_proxy(proxy_url: &str) -> Result<String, String> 
 
     let exe_path = ide_path_opt.unwrap();
 
-    // First, ensure settings.json is patched
-    let _ = patch_antigravity_settings(proxy_url);
+    // 1. If force restart requested (or if already running), terminate old processes to avoid Electron single-instance collision
+    if force_restart {
+        let _ = kill_antigravity_processes();
+    }
 
-    // Also set user environment variables AGY_PROXY_URL and HTTP_PROXY
+    // 2. If proxy_url targets 53200 and nothing is listening on 53200, automatically launch our built-in bridge!
+    let mut effective_proxy = proxy_url.to_string();
+    if effective_proxy.contains("53200") && !is_port_online(53200) {
+        if let Ok(port) = crate::diag::proxy_bridge::start_proxy_bridge(53200).await {
+            effective_proxy = format!("http://127.0.0.1:{}", port);
+        }
+    }
+
+    // 3. Ensure settings.json is patched with effective proxy
+    let _ = patch_antigravity_settings(&effective_proxy);
+
+    // 4. Set persistent Windows user environment variables
     let set_env_script = format!(
-        "[System.Environment]::SetEnvironmentVariable('AGY_PROXY_URL', '{}', 'User'); [System.Environment]::SetEnvironmentVariable('HTTP_PROXY', '{}', 'User'); [System.Environment]::SetEnvironmentVariable('HTTPS_PROXY', '{}', 'User')",
-        proxy_url, proxy_url, proxy_url
+        "[System.Environment]::SetEnvironmentVariable('AGY_PROXY_URL', '{0}', 'User'); \
+         [System.Environment]::SetEnvironmentVariable('AG_LS_PROXY', '{0}', 'User'); \
+         [System.Environment]::SetEnvironmentVariable('HTTP_PROXY', '{0}', 'User'); \
+         [System.Environment]::SetEnvironmentVariable('HTTPS_PROXY', '{0}', 'User'); \
+         [System.Environment]::SetEnvironmentVariable('ALL_PROXY', '{0}', 'User'); \
+         [System.Environment]::SetEnvironmentVariable('NO_PROXY', 'localhost,127.0.0.1,::1', 'User')",
+        effective_proxy
     );
     let _ = crate::diag::silent_command("powershell")
         .args(["-NoProfile", "-Command", &set_env_script])
         .output();
 
-    let proxy_arg = format!("--proxy-server={}", proxy_url);
+    let proxy_arg = format!("--proxy-server={}", effective_proxy);
     let bypass_arg = "--proxy-bypass-list=localhost;127.0.0.1;[::1]";
     let quic_arg = "--disable-quic";
 
     let mut cmd = std::process::Command::new(&exe_path);
     cmd.args([&proxy_arg, bypass_arg, quic_arg]);
-    cmd.env("HTTP_PROXY", proxy_url);
-    cmd.env("HTTPS_PROXY", proxy_url);
-    cmd.env("ALL_PROXY", proxy_url);
-    cmd.env("AGY_PROXY_URL", proxy_url);
+    cmd.env("HTTP_PROXY", &effective_proxy);
+    cmd.env("HTTPS_PROXY", &effective_proxy);
+    cmd.env("ALL_PROXY", &effective_proxy);
+    cmd.env("http_proxy", &effective_proxy);
+    cmd.env("https_proxy", &effective_proxy);
+    cmd.env("all_proxy", &effective_proxy);
+    cmd.env("AG_LS_PROXY", &effective_proxy);
+    cmd.env("AGY_PROXY_URL", &effective_proxy);
+    cmd.env("agy_proxy_url", &effective_proxy);
+    cmd.env("DEVPROXY_DNS_HOST", "dns.dagami.ru");
     cmd.env("NO_PROXY", "localhost,127.0.0.1,::1");
+    cmd.env("no_proxy", "localhost,127.0.0.1,::1");
 
     #[cfg(windows)]
     {
@@ -655,8 +751,9 @@ pub fn launch_antigravity_with_proxy(proxy_url: &str) -> Result<String, String> 
 
     match cmd.spawn() {
         Ok(child) => Ok(format!(
-            "Antigravity успешно запущена (PID {}) с аргументами: {} {} {}.",
+            "Antigravity успешно запущена (PID {}) через прокси {}.\nАргументы: {} {} {}.",
             child.id(),
+            effective_proxy,
             proxy_arg,
             bypass_arg,
             quic_arg
@@ -707,11 +804,20 @@ pub fn patch_antigravity_desktop_shortcut(proxy_url: &str) -> Result<String, Str
     }
 }
 
-pub fn open_antigravity_oauth_browser(proxy_url: &str) -> Result<String, String> {
-    let oauth_url = match get_antigravity_log_oauth_url() {
+pub async fn open_antigravity_oauth_browser(proxy_url: &str) -> Result<String, String> {
+    // If proxy targets 53200 and not online, launch built-in bridge automatically
+    let mut effective_proxy = proxy_url.to_string();
+    if effective_proxy.contains("53200") && !is_port_online(53200) {
+        if let Ok(port) = crate::diag::proxy_bridge::start_proxy_bridge(53200).await {
+            effective_proxy = format!("http://127.0.0.1:{}", port);
+        }
+    }
+
+    // Wait up to 5 seconds for OAuth URL if not immediately present
+    let oauth_url = match wait_for_antigravity_oauth_url(5) {
         Some(u) => u,
         None => {
-            return Err("Ссылка для входа пока не найдена в логах.\n\nШаги:\n1. Запустите Antigravity через кнопку выше\n2. Нажмите 'Sign In' в интерфейсе Antigravity\n3. Вернитесь сюда и нажмите эту кнопку — откроется браузер через европейский прокси.".to_string());
+            return Err("Ссылка для входа пока не найдена в логах language_server.log.\n\nШаги:\n1. Запустите Antigravity через кнопку выше\n2. Нажмите 'Sign In' (Вход в Google) в открывшемся интерфейсе Antigravity\n3. Вернитесь в это приложение и нажмите 'Войти через браузер' — откроется изолированный браузер через защищенный прокси.".to_string());
         }
     };
 
@@ -750,7 +856,7 @@ pub fn open_antigravity_oauth_browser(proxy_url: &str) -> Result<String, String>
     };
     let _ = std::fs::create_dir_all(&user_data_dir);
 
-    let proxy_arg = format!("--proxy-server={}", proxy_url);
+    let proxy_arg = format!("--proxy-server={}", effective_proxy);
     let bypass_arg = "--proxy-bypass-list=localhost;127.0.0.1;[::1]";
     let quic_arg = "--disable-quic";
     let profile_arg = format!("--user-data-dir={}", user_data_dir.to_string_lossy());
@@ -776,7 +882,7 @@ pub fn open_antigravity_oauth_browser(proxy_url: &str) -> Result<String, String>
     }
 
     match cmd.spawn() {
-        Ok(_) => Ok("Изолированное окно браузера с европейским прокси запущено. Авторизуйтесь в Google, и токен автоматически передастся в Antigravity.".to_string()),
+        Ok(_) => Ok("Изолированное окно браузера с европейским прокси запущено. Завершите авторизацию в Google, и токен автоматически активирует Antigravity.".to_string()),
         Err(e) => Err(format!("Ошибка запуска браузера: {}", e)),
     }
 }

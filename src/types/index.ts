@@ -406,6 +406,8 @@ export interface AntigravityClientSuiteInfo {
   current_proxy_in_settings?: string;
   detected_proxies: DetectedProxyEndpoint[];
   latest_oauth_url?: string;
+  is_internal_bridge_active: boolean;
+  internal_bridge_port: number;
 }
 
 export interface FlowUnlockInfo {

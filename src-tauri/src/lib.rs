@@ -352,8 +352,24 @@ pub mod commands {
     }
 
     #[tauri::command]
-    pub fn launch_antigravity_with_proxy(proxy_url: String) -> Result<String, String> {
-        diag::antigravity_unlock::launch_antigravity_with_proxy(&proxy_url)
+    pub async fn launch_antigravity_with_proxy(proxy_url: String, force_restart: Option<bool>) -> Result<String, String> {
+        diag::antigravity_unlock::launch_antigravity_with_proxy(&proxy_url, force_restart.unwrap_or(true)).await
+    }
+
+    #[tauri::command]
+    pub fn kill_antigravity_processes() -> Result<String, String> {
+        diag::antigravity_unlock::kill_antigravity_processes()
+    }
+
+    #[tauri::command]
+    pub async fn start_internal_proxy_bridge(port: Option<u16>) -> Result<u16, String> {
+        diag::proxy_bridge::start_proxy_bridge(port.unwrap_or(53200)).await
+    }
+
+    #[tauri::command]
+    pub fn stop_internal_proxy_bridge() -> Result<String, String> {
+        diag::proxy_bridge::stop_proxy_bridge()?;
+        Ok("Встроенный прокси-мост остановлен".to_string())
     }
 
     #[tauri::command]
@@ -367,8 +383,8 @@ pub mod commands {
     }
 
     #[tauri::command]
-    pub fn open_antigravity_oauth_browser(proxy_url: String) -> Result<String, String> {
-        diag::antigravity_unlock::open_antigravity_oauth_browser(&proxy_url)
+    pub async fn open_antigravity_oauth_browser(proxy_url: String) -> Result<String, String> {
+        diag::antigravity_unlock::open_antigravity_oauth_browser(&proxy_url).await
     }
 
     #[tauri::command]
@@ -526,6 +542,9 @@ pub fn run() {
             commands::rollback_antigravity_unlock,
             commands::get_antigravity_client_suite_info,
             commands::launch_antigravity_with_proxy,
+            commands::kill_antigravity_processes,
+            commands::start_internal_proxy_bridge,
+            commands::stop_internal_proxy_bridge,
             commands::patch_antigravity_settings,
             commands::patch_antigravity_desktop_shortcut,
             commands::open_antigravity_oauth_browser,
