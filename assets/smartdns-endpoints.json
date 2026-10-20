@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-10-21T00:00:00Z",
+  "smart_dns_servers": [
+    {
+      "name": "Comss.one SmartDNS (Frankfurt DE-1)",
+      "ip": "92.223.109.31",
+      "port": 53,
+      "region": "Frankfurt, Germany",
+      "provider": "comss.one"
+    },
+    {
+      "name": "Comss.one SmartDNS (Frankfurt DE-2)",
+      "ip": "91.239.25.119",
+      "port": 53,
+      "region": "Frankfurt, Germany",
+      "provider": "comss.one"
+    },
+    {
+      "name": "Comss.one SmartDNS (Helsinki FI)",
+      "ip": "83.220.169.155",
+      "port": 53,
+      "region": "Helsinki, Finland",
+      "provider": "comss.one"
+    }
+  ],
+  "doh_servers": [
+    {
+      "name": "Comss.one Secure DoH",
+      "url": "https://dns.comss.one/dns-query",
+      "sni_proxy": true
+    },
+    {
+      "name": "Cloudflare Secure DoH",
+      "url": "https://security.cloudflare-dns.com/dns-query",
+      "sni_proxy": false
+    }
+  ],
+  "monitored_domains": [
+    "cloudcode-pa.googleapis.com",
+    "daily-cloudcode-pa.googleapis.com",
+    "generativelanguage.googleapis.com",
+    "alkalimakersuite-pa.googleapis.com",
+    "proactivebackend-pa.googleapis.com",
+    "oauth2.googleapis.com",
+    "accounts.google.com"
+  ]
+}

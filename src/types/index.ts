@@ -486,3 +486,26 @@ export interface SpeedBenchmarkReport {
   results: BenchmarkTargetResult[];
   recommendation_ru: string;
 }
+
+export interface ApiKeyValidationReport {
+  provider: string;
+  is_valid: boolean;
+  is_geo_blocked: boolean;
+  http_status: number;
+  latency_ms: number;
+  message: string;
+  available_models: string[];
+  quota_info?: string;
+}
+
+export interface DevCertAuditReport {
+  node_extra_ca_certs?: string;
+  node_tls_reject_unauthorized?: string;
+  git_ssl_verify?: string;
+  git_ssl_backend?: string;
+  python_ssl_cert_file?: string;
+  requests_ca_bundle?: string;
+  npm_strict_ssl?: string;
+  is_permissive_mode_enabled: boolean;
+  status_summary: string;
+}

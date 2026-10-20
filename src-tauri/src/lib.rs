@@ -456,6 +456,44 @@ pub mod commands {
     pub async fn run_ai_speed_benchmark() -> Result<diag::speed_benchmark::SpeedBenchmarkReport, String> {
         Ok(diag::speed_benchmark::run_ai_speed_benchmark().await)
     }
+
+    #[tauri::command]
+    pub async fn validate_ai_api_key(
+        provider: String,
+        api_key: String,
+        proxy_url: Option<String>,
+    ) -> Result<diag::api_key_validator::ApiKeyValidationReport, String> {
+        diag::api_key_validator::validate_ai_api_key(provider, api_key, proxy_url).await
+    }
+
+    #[tauri::command]
+    pub fn audit_developer_certs() -> Result<diag::dev_certs::DevCertAuditReport, String> {
+        Ok(diag::dev_certs::audit_developer_certs())
+    }
+
+    #[tauri::command]
+    pub fn apply_developer_certs_fix(use_schannel_for_git: bool) -> Result<String, String> {
+        diag::dev_certs::apply_developer_certs_fix(use_schannel_for_git)
+    }
+
+    #[tauri::command]
+    pub fn rollback_developer_certs_fix() -> Result<String, String> {
+        diag::dev_certs::rollback_developer_certs_fix()
+    }
+
+    #[tauri::command]
+    pub fn fix_ide_proxy_and_ssl(
+        ide_id: String,
+        proxy_url: Option<String>,
+        disable_ssl: bool,
+    ) -> Result<String, String> {
+        diag::ide::fix_ide_proxy_and_ssl(&ide_id, proxy_url, disable_ssl)
+    }
+
+    #[tauri::command]
+    pub fn reset_ide_proxy(ide_id: String) -> Result<String, String> {
+        diag::ide::reset_ide_proxy(&ide_id)
+    }
 }
 
 pub fn run() {
@@ -567,6 +605,12 @@ pub fn run() {
             commands::apply_cli_proxy,
             commands::reset_cli_proxy,
             commands::run_ai_speed_benchmark,
+            commands::validate_ai_api_key,
+            commands::audit_developer_certs,
+            commands::apply_developer_certs_fix,
+            commands::rollback_developer_certs_fix,
+            commands::fix_ide_proxy_and_ssl,
+            commands::reset_ide_proxy,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -15,6 +15,9 @@ import {
   RefreshCw,
   Server,
   Activity,
+  Copy,
+  Check,
+  Share2,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { SpeedBenchmarkReport } from "../types";
@@ -43,6 +46,34 @@ export const SpeedBenchmarkView: React.FC = () => {
   const [report, setReport] = useState<SpeedBenchmarkReport | null>(DEMO_BENCHMARK);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [copiedTelegram, setCopiedTelegram] = useState<boolean>(false);
+
+  const copyForTelegram = () => {
+    if (!report || !report.results) return;
+    const lines = [
+      "⚡ *Спидтест ИИ — AI Access Doctor v1.0*",
+      `📅 _${report.timestamp}_`,
+      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    ];
+
+    const sorted = [...report.results].sort((a, b) => (a.latency_ms || 9999) - (b.latency_ms || 9999));
+    sorted.forEach((r, idx) => {
+      const medal = idx === 0 ? "🥇 " : idx === 1 ? "🥈 " : idx === 2 ? "🥉 " : "🔹 ";
+      const latencyStr = r.latency_ms ? `${r.latency_ms} мс` : "Блокировка";
+      const statusIcon = r.is_available ? "✅" : "❌";
+      lines.push(`${medal}*${r.name}*: \`${latencyStr}\` ${statusIcon}`);
+    });
+
+    lines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    if (report.fastest_provider_name) {
+      lines.push(`🏆 Лидер: *${report.fastest_provider_name}* (${report.fastest_provider_rtt_ms} мс)`);
+    }
+    lines.push("🛡️ Обход блокировок без потери скорости: https://github.com/kudaevE/ai-access-doctor");
+
+    navigator.clipboard.writeText(lines.join("\n"));
+    setCopiedTelegram(true);
+    setTimeout(() => setCopiedTelegram(false), 2500);
+  };
 
   const runBenchmark = async () => {
     setIsRunning(true);
@@ -127,14 +158,25 @@ export const SpeedBenchmarkView: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={runBenchmark}
-          disabled={isRunning}
-          className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
-        >
-          <RotateCw className={`w-4 h-4 ${isRunning ? "animate-spin" : ""}`} />
-          {isRunning ? "Идёт замер скорости..." : "⚡ Запустить тест скорости"}
-        </button>
+        <div className="flex flex-col sm:flex-row items-center gap-2.5">
+          <button
+            onClick={copyForTelegram}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-elevated hover:bg-slate-700/60 border border-border/60 text-slate-200 text-xs font-semibold active:scale-95 transition-all"
+            title="Скопировать результаты со смайлами для отправки в Telegram или на форум"
+          >
+            {copiedTelegram ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-sky-400" />}
+            <span>{copiedTelegram ? "Скопировано!" : "Поделиться в Telegram"}</span>
+          </button>
+
+          <button
+            onClick={runBenchmark}
+            disabled={isRunning}
+            className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
+          >
+            <RotateCw className={`w-4 h-4 ${isRunning ? "animate-spin" : ""}`} />
+            {isRunning ? "Идёт замер скорости..." : "⚡ Запустить тест скорости"}
+          </button>
+        </div>
       </div>
 
       {/* Error Banner */}

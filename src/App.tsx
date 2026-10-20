@@ -6,6 +6,7 @@ import { ErrorDetectiveView } from "./components/ErrorDetectiveView";
 import { AntigravityDoctorView } from "./components/AntigravityDoctorView";
 import { GoogleFlowView } from "./components/GoogleFlowView";
 import { SpeedBenchmarkView } from "./components/SpeedBenchmarkView";
+import { ApiKeyInspectorView } from "./components/ApiKeyInspectorView";
 import { FreeHubView } from "./components/FreeHubView";
 import { ConnectionComparisonView } from "./components/ConnectionComparisonView";
 import { IdeDoctorView } from "./components/IdeDoctorView";
@@ -510,6 +511,8 @@ export const App: React.FC = () => {
           {activeTab === "google_flow" && <GoogleFlowView />}
 
           {activeTab === "speed_benchmark" && <SpeedBenchmarkView />}
+
+          {activeTab === "api_keys" && <ApiKeyInspectorView />}
 
           {activeTab === "free_hub" && <FreeHubView />}
 

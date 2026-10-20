@@ -178,15 +178,36 @@ graph TD
   - **Anthropic Claude API**
   - **GitHub Copilot Gateway**
 - Определение абсолютного чемпиона скорости и стабильности соединения.
+- **📸 Шеринг в Telegram / чаты в 1 клик:** автоматическая генерация красивой форматированной карточки со смайликами, пингом и статусом для отправки коллегам.
 
-### 4. 🩺 Hosts File Doctor
+### 4. 🔑 Инспектор API-Ключей, Пинга и Квот (API Key Inspector)
+- **100% Local-First проверка:** ключи никогда не сохраняются на диск и не логируются.
+- Поддержка **Google Gemini**, **OpenAI**, **Anthropic Claude**, **Groq LPU** и **OpenRouter**.
+- Замер реального сетевого пинга (RTT в мс) к API-эндпоинтам.
+- Выявление скрытых блокировок **GeoIP (User location is not supported)** и автоматические рекомендации по обходу.
+- Отображение доступных моделей на ключе и статуса квоты/баланса.
+- Опциональный тест через встроенный европейский мост.
+
+### 5. 💻 Экосистема AI IDE & MCP Doctor (Cursor, Windsurf, Claude)
+- **Cursor AI Editor & Windsurf (Cascade):** 1-клик привязка к европейскому мосту или сброс к системным значениям без ручного редактирования `settings.json`.
+- **Visual Studio Code & GitHub Copilot:** автоматическая настройка `http.proxyStrictSSL: false` и параметров переопределения прокси.
+- **Claude Desktop:** инспекция каталогов и конфигураций MCP.
+- **MCP Context Doctor:** аудит всех зарегистрированных Model Context Protocol серверов.
+
+### 6. 🛡️ SSL & Dev Certs Doctor (Git, Node.js, Python, npm)
+- Решение вечной проблемы разработчиков в РФ: `UNABLE_TO_GET_ISSUER_CERT_LOCALLY`, `self-signed certificate in certificate chain`.
+- **Переключение Git на системное хранилище Windows (Schannel):** устраняет 99% сбоев при `git clone` через VPN/прокси.
+- Автоматическая настройка безопасного пропуска TLS для Node.js (`NODE_TLS_REJECT_UNAUTHORIZED: 0`), Python и npm.
+- Кнопка полного возврата в строгий режим SSL в 1 клик.
+
+### 7. 🩺 Hosts File Doctor
 - Сканирование системного файла `C:\Windows\System32\drivers\etc\hosts`.
 - Автоматическое выявление устаревших, отравленных или заблокированных записей доменов ИИ.
 - **Резервная копия в 1 клик:** автоматическое сохранение `hosts.bak.<timestamp>` перед любым вмешательством.
 - Кнопка **«Очистить ИИ-записи»** возвращает чистый DNS.
 - Кнопка **«Папка etc»** мгновенно открывает каталог в проводнике.
 
-### 5. 🔄 CLI & Terminal Proxy Sync
+### 8. 🔄 CLI & Terminal Proxy Sync
 - Устраняет причину таймаутов в консоли разработчика.
 - Синхронизация в 1 клик между:
   - `git config --global http.proxy`
@@ -194,7 +215,7 @@ graph TD
   - Системными переменными среды `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`.
 - Кнопка мгновенного сброса для возврата прямого соединения.
 
-### 6. 🪟 Системный трей Windows (System Tray)
+### 9. 🪟 Системный трей Windows (System Tray)
 - Сворачивание в системный трей рядом с часами.
 - Контекстное меню по правому клику:
   - **Показать AI Access Doctor**

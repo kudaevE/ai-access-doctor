@@ -1,5 +1,7 @@
 pub mod antigravity_unlock;
 pub mod proxy_bridge;
+pub mod api_key_validator;
+pub mod dev_certs;
 pub mod cli_proxy;
 pub mod comparison;
 pub mod dns;

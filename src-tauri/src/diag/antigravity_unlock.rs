@@ -478,35 +478,72 @@ pub struct SmartDnsSyncReport {
 }
 
 pub async fn sync_and_benchmark_smart_dns() -> Result<SmartDnsSyncReport, String> {
-    let candidate_servers = [
-        ("Comss.one Primary", "92.223.109.31"),
-        ("Comss.one Secondary", "91.239.25.119"),
-        ("Comss Anycast Europe", "83.220.169.155"),
-        ("Comss Anycast Fallback", "195.133.25.16"),
-        ("Dagami SmartDNS", "193.233.244.38"),
-        ("Cloudflare DNS", "1.1.1.1"),
-        ("Google Clean DNS", "8.8.8.8"),
+    let mut candidate_servers: Vec<(String, String)> = vec![
+        ("Comss.one Primary".to_string(), "92.223.109.31".to_string()),
+        ("Comss.one Secondary".to_string(), "91.239.25.119".to_string()),
+        ("Comss Anycast Europe".to_string(), "83.220.169.155".to_string()),
+        ("Comss Anycast Fallback".to_string(), "195.133.25.16".to_string()),
+        ("Dagami SmartDNS".to_string(), "193.233.244.38".to_string()),
+        ("Cloudflare DNS".to_string(), "1.1.1.1".to_string()),
+        ("Google Clean DNS".to_string(), "8.8.8.8".to_string()),
     ];
+
+    // Dynamic Remote Update from GitHub raw endpoints database
+    let remote_url = "https://raw.githubusercontent.com/kudaevE/ai-access-doctor/main/assets/smartdns-endpoints.json";
+    if let Ok(client) = reqwest::Client::builder().timeout(std::time::Duration::from_millis(1500)).build() {
+        if let Ok(resp) = client.get(remote_url).send().await {
+            if resp.status().is_success() {
+                if let Ok(json) = resp.json::<serde_json::Value>().await {
+                    if let Some(servers) = json["smart_dns_servers"].as_array() {
+                        for s in servers {
+                            if let (Some(name), Some(ip)) = (s["name"].as_str(), s["ip"].as_str()) {
+                                if !candidate_servers.iter().any(|(_, existing_ip)| existing_ip == ip) {
+                                    candidate_servers.insert(0, (name.to_string(), ip.to_string()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     let mut statuses = Vec::new();
     let mut alive_servers: Vec<(String, u64)> = Vec::new();
 
-    for (name, ip) in candidate_servers {
+    for (name, ip) in &candidate_servers {
         let res = crate::diag::dns::resolve_via_upstream("daily-cloudcode-pa.googleapis.com", name, ip).await;
         let is_alive = res.success && !res.resolved_ips.is_empty();
         let resolved_ip = res.resolved_ips.first().cloned();
         let rtt = res.rtt_ms.unwrap_or(999);
 
         statuses.push(SmartDnsServerStatus {
-            ip: ip.to_string(),
-            name: name.to_string(),
+            ip: ip.clone(),
+            name: name.clone(),
             latency_ms: res.rtt_ms,
             is_alive,
             resolved_ip,
         });
 
         if is_alive {
-            alive_servers.push((ip.to_string(), rtt));
+            alive_servers.push((ip.clone(), rtt));
+        }
+    }
+
+    // Benchmark DoH (DNS-over-HTTPS on Port 443) health
+    let doh_url = "https://dns.comss.one/dns-query?name=daily-cloudcode-pa.googleapis.com&type=A";
+    if let Ok(client) = reqwest::Client::builder().timeout(std::time::Duration::from_millis(2000)).build() {
+        let doh_start = std::time::Instant::now();
+        if let Ok(resp) = client.get(doh_url).header("accept", "application/dns-json").send().await {
+            let doh_latency = doh_start.elapsed().as_millis() as u64;
+            let is_doh_ok = resp.status().is_success();
+            statuses.push(SmartDnsServerStatus {
+                ip: "https://dns.comss.one".to_string(),
+                name: "Comss Secure DoH (HTTPS 443)".to_string(),
+                latency_ms: if is_doh_ok { Some(doh_latency) } else { None },
+                is_alive: is_doh_ok,
+                resolved_ip: Some("SNI Proxy Relay".to_string()),
+            });
         }
     }
 

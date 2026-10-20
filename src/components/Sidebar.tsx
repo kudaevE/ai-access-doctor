@@ -18,6 +18,7 @@ import {
   Zap,
   Video,
   Gauge,
+  KeyRound,
 } from "lucide-react";
 import { FullDiagnosticReport } from "../types";
 
@@ -26,6 +27,7 @@ export type TabType =
   | "antigravity_doctor"
   | "google_flow"
   | "speed_benchmark"
+  | "api_keys"
   | "free_hub"
   | "detective"
   | "services"
@@ -76,6 +78,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: "Спидтест ИИ",
       icon: Gauge,
       badge: "Ping",
+      badgeColor: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+    },
+    {
+      id: "api_keys" as TabType,
+      label: "Инспектор Ключей",
+      icon: KeyRound,
+      badge: "API",
       badgeColor: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
     },
     {
