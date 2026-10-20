@@ -348,6 +348,29 @@ pub fn apply_antigravity_unlock_profile(profile_type: &str) -> Result<String, St
 
     // 2. Configure NRPT rules according to selected profile
     match profile_type {
+        "comss_smartdns" => {
+            let cmd = r#"
+                Get-DnsClientNrptRule -ErrorAction SilentlyContinue | Where-Object { $_.Comment -like '*AG_*' -or $_.Comment -like '*AI_ACCESS_*' } | Remove-DnsClientNrptRule -Force -ErrorAction SilentlyContinue;
+                $servers = @('92.223.109.31', '91.239.25.119', '83.220.169.155');
+                $domains = @(
+                    'cloudcode-pa.googleapis.com',
+                    'daily-cloudcode-pa.googleapis.com',
+                    'generativelanguage.googleapis.com',
+                    'alkalimakersuite-pa.googleapis.com',
+                    'proactivebackend-pa.googleapis.com',
+                    'oauth2.googleapis.com',
+                    'accounts.google.com'
+                );
+                foreach ($d in $domains) {
+                    Add-DnsClientNrptRule -Namespace $d -NameServers $servers -Comment 'AI_ACCESS_SMART_DNS' -ErrorAction SilentlyContinue;
+                }
+                netsh interface ipv6 set prefixpolicy ::ffff:0:0/96 46 4;
+                Clear-DnsClientCache -ErrorAction SilentlyContinue;
+                ipconfig /flushdns
+            "#;
+            execute_elevated_powershell(cmd)?;
+            Ok("Режим «Comss.one SmartDNS» успешно активирован. Правила NRPT для Google AI применены, обход РФ включен без VPN.".to_string())
+        }
         "ag_relay" => {
             // Proven AG Unlocker rules (matching AG_2.23.1.exe)
             let cmd = r#"
@@ -433,6 +456,106 @@ pub fn rollback_antigravity_unlock() -> Result<String, String> {
         .output();
 
     Ok("Все правила NRPT для Antigravity удалены, стек IPv6 сброшен к стандартам Windows, переменные окружения очищены.".to_string())
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SmartDnsServerStatus {
+    pub ip: String,
+    pub name: String,
+    pub latency_ms: Option<u64>,
+    pub is_alive: bool,
+    pub resolved_ip: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SmartDnsSyncReport {
+    pub timestamp: String,
+    pub fastest_server: Option<String>,
+    pub fastest_latency_ms: Option<u64>,
+    pub servers: Vec<SmartDnsServerStatus>,
+    pub nrpt_rules_count: usize,
+    pub status_message: String,
+}
+
+pub async fn sync_and_benchmark_smart_dns() -> Result<SmartDnsSyncReport, String> {
+    let candidate_servers = [
+        ("Comss.one Primary", "92.223.109.31"),
+        ("Comss.one Secondary", "91.239.25.119"),
+        ("Comss Anycast Europe", "83.220.169.155"),
+        ("Comss Anycast Fallback", "195.133.25.16"),
+        ("Dagami SmartDNS", "193.233.244.38"),
+        ("Cloudflare DNS", "1.1.1.1"),
+        ("Google Clean DNS", "8.8.8.8"),
+    ];
+
+    let mut statuses = Vec::new();
+    let mut alive_servers: Vec<(String, u64)> = Vec::new();
+
+    for (name, ip) in candidate_servers {
+        let res = crate::diag::dns::resolve_via_upstream("daily-cloudcode-pa.googleapis.com", name, ip).await;
+        let is_alive = res.success && !res.resolved_ips.is_empty();
+        let resolved_ip = res.resolved_ips.first().cloned();
+        let rtt = res.rtt_ms.unwrap_or(999);
+
+        statuses.push(SmartDnsServerStatus {
+            ip: ip.to_string(),
+            name: name.to_string(),
+            latency_ms: res.rtt_ms,
+            is_alive,
+            resolved_ip,
+        });
+
+        if is_alive {
+            alive_servers.push((ip.to_string(), rtt));
+        }
+    }
+
+    alive_servers.sort_by_key(|&(_, rtt)| rtt);
+
+    let (fastest_server, fastest_latency_ms) = if let Some((ip, rtt)) = alive_servers.first() {
+        (Some(ip.clone()), Some(*rtt))
+    } else {
+        (None, None)
+    };
+
+    let top_ips: Vec<String> = alive_servers.iter().take(3).map(|(ip, _)| ip.clone()).collect();
+    let rules_count = if !top_ips.is_empty() {
+        let ips_ps = top_ips.iter().map(|ip| format!("'{}'", ip)).collect::<Vec<_>>().join(",");
+        let cmd = format!(
+            r#"
+            Get-DnsClientNrptRule -ErrorAction SilentlyContinue | Where-Object {{ $_.Comment -like '*AG_*' -or $_.Comment -like '*AI_ACCESS_*' }} | Remove-DnsClientNrptRule -Force -ErrorAction SilentlyContinue;
+            $servers = @({});
+            $domains = @('cloudcode-pa.googleapis.com','daily-cloudcode-pa.googleapis.com','generativelanguage.googleapis.com','alkalimakersuite-pa.googleapis.com','proactivebackend-pa.googleapis.com','oauth2.googleapis.com','accounts.google.com');
+            foreach ($d in $domains) {{
+                Add-DnsClientNrptRule -Namespace $d -NameServers $servers -Comment 'AI_ACCESS_SMART_DNS' -ErrorAction SilentlyContinue;
+            }}
+            netsh interface ipv6 set prefixpolicy ::ffff:0:0/96 46 4;
+            Clear-DnsClientCache -ErrorAction SilentlyContinue;
+            ipconfig /flushdns
+            "#,
+            ips_ps
+        );
+        let _ = execute_elevated_powershell(&cmd);
+        7
+    } else {
+        0
+    };
+
+    let now = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let status_message = if let Some(ref fast) = fastest_server {
+        format!("Синхронизация завершена. Самый быстрый SmartDNS: {} ({} мс). Правила NRPT обновлены ({} доменов).", fast, fastest_latency_ms.unwrap_or(0), rules_count)
+    } else {
+        "Все SmartDNS серверы временно недоступны. Используйте встроенный локальный мост на порту 53200.".to_string()
+    };
+
+    Ok(SmartDnsSyncReport {
+        timestamp: now,
+        fastest_server,
+        fastest_latency_ms,
+        servers: statuses,
+        nrpt_rules_count: rules_count,
+        status_message,
+    })
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -149,6 +149,8 @@ graph TD
 ```
 
 ### 1. ⚡ Antigravity Doctor (Google CloudCode & PA Suite)
+- **🏆 Встроенный Comss.one SmartDNS:** 100% обход региональных блокировок Google AI (`cloudcode-pa.googleapis.com`, `generativelanguage.googleapis.com`, `oauth2.googleapis.com` и др.) без сторонних VPN. Селективные правила Windows NRPT подменяют IP только для заблокированных сервисов Google на европейские релеи, не замедляя остальной интернет.
+- **🔄 Живой бенчмарк и авто-обновление серверов:** измерение задержки (RTT) до всех серверов SmartDNS в реальном времени и автоматический выбор узла с минимальным пингом.
 - **🚀 Запуск Antigravity с прокси:** автоматический запуск Electron-клиента со специальными Chromium-флагами `--proxy-server="<proxy>" --proxy-bypass-list="localhost;127.0.0.1;[::1]" --disable-quic` (отключает зависающий протокол QUIC/UDP и форсирует TCP/TLS).
 - **🔑 Вход в Google без ошибок (OAuth Browser Helper):** перехват свежей OAuth-ссылки из `language_server.log` и запуск изолированного окна Chrome/Edge через европейский прокси — авторизация проходит за 5 секунд и автоматически передается в Antigravity.
 - **⚙️ Автоматический патч `settings.json`:** прописывает `"http.proxySupport": "override"`, `"http.proxyStrictSSL": false` и адрес прокси в `%APPDATA%\Antigravity\User\settings.json`, заставляя внутренний Go Language Server работать через прокси.

@@ -26,12 +26,14 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
-import { AntigravityDoctorReport, AntigravityClientSuiteInfo } from "../types";
+import { AntigravityDoctorReport, AntigravityClientSuiteInfo, SmartDnsSyncReport } from "../types";
 import { HostsDoctorSection } from "./HostsDoctorSection";
 
 export const AntigravityDoctorView: React.FC = () => {
   const [data, setData] = useState<AntigravityDoctorReport | null>(null);
   const [clientInfo, setClientInfo] = useState<AntigravityClientSuiteInfo | null>(null);
+  const [smartDnsReport, setSmartDnsReport] = useState<SmartDnsSyncReport | null>(null);
+  const [isSyncingSmartDns, setIsSyncingSmartDns] = useState<boolean>(false);
   const [proxyUrl, setProxyUrl] = useState<string>("http://127.0.0.1:53200");
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
@@ -42,7 +44,7 @@ export const AntigravityDoctorView: React.FC = () => {
   const [isPatchingShortcut, setIsPatchingShortcut] = useState<boolean>(false);
   const [isStartingBridge, setIsStartingBridge] = useState<boolean>(false);
   const [isKillingProcesses, setIsKillingProcesses] = useState<boolean>(false);
-  const [selectedProfile, setSelectedProfile] = useState<string>("ag_relay");
+  const [selectedProfile, setSelectedProfile] = useState<string>("comss_smartdns");
   const [feedbackMsg, setFeedbackMsg] = useState<{
     text: string;
     isError: boolean;
@@ -208,6 +210,22 @@ export const AntigravityDoctorView: React.FC = () => {
       setFeedbackMsg({ text: `Ошибка создания ярлыка: ${err.toString()}`, isError: true });
     } finally {
       setIsPatchingShortcut(false);
+    }
+  };
+
+  const handleSyncSmartDns = async () => {
+    setIsSyncingSmartDns(true);
+    setFeedbackMsg(null);
+    try {
+      const rep = await invoke<SmartDnsSyncReport>("sync_and_benchmark_smart_dns");
+      setSmartDnsReport(rep);
+      setFeedbackMsg({ text: rep.status_message, isError: false });
+      await fetchStatus();
+      await fetchClientInfo();
+    } catch (err: any) {
+      setFeedbackMsg({ text: `Ошибка синхронизации SmartDNS: ${err.toString()}`, isError: true });
+    } finally {
+      setIsSyncingSmartDns(false);
     }
   };
 
@@ -731,8 +749,41 @@ export const AntigravityDoctorView: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Option 1: AG Relay */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Option 1: Comss SmartDNS */}
+          <div
+            onClick={() => setSelectedProfile("comss_smartdns")}
+            className={`p-5 rounded-xl border cursor-pointer transition-all ${
+              selectedProfile === "comss_smartdns"
+                ? "bg-sky-500/10 border-sky-500/60 shadow-md shadow-sky-500/10"
+                : "bg-surface-elevated/40 border-border/40 hover:border-border/80"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                🏆 Выбор №1 для РФ
+              </span>
+              <div
+                className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                  selectedProfile === "comss_smartdns"
+                    ? "border-sky-400 bg-sky-500"
+                    : "border-slate-600"
+                }`}
+              >
+                {selectedProfile === "comss_smartdns" && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-950" />
+                )}
+              </div>
+            </div>
+            <h3 className="font-semibold text-white text-sm mb-1 flex items-center gap-1.5">
+              <span>🌐 Comss.one SmartDNS</span>
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Умные серверы (92.223.109.31 / 91.239.25.119), прозрачно перенаправляющие Google AI через европейские SNI-шлюзы. Работает без VPN и не замедляет интернет.
+            </p>
+          </div>
+
+          {/* Option 2: AG Relay */}
           <div
             onClick={() => setSelectedProfile("ag_relay")}
             className={`p-5 rounded-xl border cursor-pointer transition-all ${
@@ -742,8 +793,8 @@ export const AntigravityDoctorView: React.FC = () => {
             }`}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                Рекомендуется
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                Локальный шлюз
               </span>
               <div
                 className={`w-4 h-4 rounded-full border flex items-center justify-center ${
@@ -758,14 +809,14 @@ export const AntigravityDoctorView: React.FC = () => {
               </div>
             </div>
             <h3 className="font-semibold text-white text-sm mb-1">
-              ⚡ Автоматический шлюз
+              ⚡ Antigravity Relay (ag_dns)
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Оптимальный маршрут для Google Antigravity и Gemini. Автоматически обходит региональные ограничения и восстанавливает доступ к ИИ.
+              Локальный релей ag_dns на 127.65.71.1:443. Маршрутизирует вызовы CloudCode через встроенный системный диспетчер.
             </p>
           </div>
 
-          {/* Option 2: Clean DoH */}
+          {/* Option 3: Clean DoH */}
           <div
             onClick={() => setSelectedProfile("clean_doh")}
             className={`p-5 rounded-xl border cursor-pointer transition-all ${
@@ -775,8 +826,8 @@ export const AntigravityDoctorView: React.FC = () => {
             }`}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Без прокси
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Прямой Anycast
               </span>
               <div
                 className={`w-4 h-4 rounded-full border flex items-center justify-center ${
@@ -791,16 +842,14 @@ export const AntigravityDoctorView: React.FC = () => {
               </div>
             </div>
             <h3 className="font-semibold text-white text-sm mb-1">
-              🛡️ Чистый DoH Anycast (Cloudflare & Google)
+              🛡️ Чистый Anycast (1.1.1.1)
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Направляет запросы к Google CloudCode напрямую на 1.1.1.1 и 8.8.8.8
-              через NRPT. Устраняет подмену DNS провайдером (185.149.145.6) без
-              сторонних серверов.
+              Направляет запросы к Google CloudCode напрямую на 1.1.1.1 и 8.8.8.8 через NRPT. Устраняет цензуру и подмену DNS провайдером.
             </p>
           </div>
 
-          {/* Option 3: User Proxy */}
+          {/* Option 4: User Proxy */}
           <div
             onClick={() => setSelectedProfile("user_proxy")}
             className={`p-5 rounded-xl border cursor-pointer transition-all ${
@@ -810,8 +859,8 @@ export const AntigravityDoctorView: React.FC = () => {
             }`}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                127.0.0.1:10809
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                127.0.0.1:53200
               </span>
               <div
                 className={`w-4 h-4 rounded-full border flex items-center justify-center ${
@@ -826,15 +875,45 @@ export const AntigravityDoctorView: React.FC = () => {
               </div>
             </div>
             <h3 className="font-semibold text-white text-sm mb-1">
-              🔌 Свой Прокси (AG_LS_PROXY)
+              🔌 Локальный мост (AG_LS_PROXY)
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Привязывает переменную окружения AG_LS_PROXY к вашему работающему
-              прокси (127.0.0.1:10809). Language Server направляет все gRPC
-              вызовы через него.
+              Привязывает переменную окружения AG_LS_PROXY к европейскому мосту на порту 53200 для полной изоляции трафика.
             </p>
           </div>
         </div>
+
+        {/* SmartDNS Live Sync & Benchmark Banner */}
+        {smartDnsReport && (
+          <div className="p-4 bg-surface-elevated/40 border border-sky-500/30 rounded-xl space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-sky-400" />
+                <span className="text-xs font-bold text-white">Результаты онлайн-теста SmartDNS:</span>
+              </div>
+              <span className="text-[10px] text-slate-400">Обновлено: {smartDnsReport.timestamp}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {smartDnsReport.servers.map((s) => (
+                <div
+                  key={s.ip}
+                  className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-1.5 ${
+                    s.is_alive
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
+                      : "bg-slate-800/40 border-slate-700 text-slate-400"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${s.is_alive ? "bg-emerald-400" : "bg-slate-600"}`} />
+                  <span className="font-medium">{s.name}</span>
+                  <span className="font-mono text-[10px] opacity-75">({s.ip})</span>
+                  {s.latency_ms !== undefined && s.latency_ms !== null && (
+                    <span className="font-bold text-[10px] text-sky-300 ml-1">{s.latency_ms} мс</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
           <button
@@ -847,9 +926,19 @@ export const AntigravityDoctorView: React.FC = () => {
               ? "Применение настроек..."
               : "Применить выбранный обход в 1 клик"}
           </button>
-          <span className="text-xs text-slate-400">
-            * Потребуется стандартное подтверждение Windows UAC (от имени
-            администратора) для настройки NRPT.
+
+          <button
+            onClick={handleSyncSmartDns}
+            disabled={isSyncingSmartDns}
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-surface-elevated hover:bg-slate-700/60 border border-border/60 text-slate-200 font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            title="Протестировать все доступные SmartDNS серверы и автоматически обновить правила NRPT самыми быстрыми"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingSmartDns ? "animate-spin text-sky-400" : "text-sky-400"}`} />
+            <span>{isSyncingSmartDns ? "Синхронизация..." : "🔄 Проверить и синхронизировать SmartDNS"}</span>
+          </button>
+
+          <span className="text-xs text-slate-400 sm:ml-auto">
+            * Настройка NRPT требует стандартного подтверждения администратора (UAC).
           </span>
         </div>
       </div>

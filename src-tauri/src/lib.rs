@@ -388,6 +388,11 @@ pub mod commands {
     }
 
     #[tauri::command]
+    pub async fn sync_and_benchmark_smart_dns() -> Result<diag::antigravity_unlock::SmartDnsSyncReport, String> {
+        diag::antigravity_unlock::sync_and_benchmark_smart_dns().await
+    }
+
+    #[tauri::command]
     pub fn get_google_flow_info(app: AppHandle) -> Result<diag::flow_unlocker::FlowUnlockInfo, String> {
         Ok(diag::flow_unlocker::get_flow_info(&app))
     }
@@ -548,6 +553,7 @@ pub fn run() {
             commands::patch_antigravity_settings,
             commands::patch_antigravity_desktop_shortcut,
             commands::open_antigravity_oauth_browser,
+            commands::sync_and_benchmark_smart_dns,
             commands::get_google_flow_info,
             commands::open_google_flow,
             commands::open_flow_in_external_browser,

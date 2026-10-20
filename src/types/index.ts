@@ -410,6 +410,23 @@ export interface AntigravityClientSuiteInfo {
   internal_bridge_port: number;
 }
 
+export interface SmartDnsServerStatus {
+  ip: string;
+  name: string;
+  latency_ms?: number;
+  is_alive: boolean;
+  resolved_ip?: string;
+}
+
+export interface SmartDnsSyncReport {
+  timestamp: string;
+  fastest_server?: string;
+  fastest_latency_ms?: number;
+  servers: SmartDnsServerStatus[];
+  nrpt_rules_count: number;
+  status_message: string;
+}
+
 export interface FlowUnlockInfo {
   flow_url: string;
   script_code: string;
